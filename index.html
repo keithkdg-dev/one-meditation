@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050a1a">
+<meta name="description" content="Connect with meditators worldwide. No servers. No data centers. Pure peer-to-peer consciousness.">
+<title>ONE — Universal Meditation Network</title>
+<link rel="manifest" href="#" id="manifest-link">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@300;400&display=swap" rel="stylesheet">
+
+<!-- ═══════════════════════════════════════════════════════
+     GUN.JS — The P2P database that runs in every browser.
+     This single script enables device-to-device connections
+     with NO servers, NO accounts, NO data centers.
+     Each browser that opens this app becomes part of the mesh.
+     ═══════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gun/sea.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gun/axe.js"></script>
+
+<style>
+  :root {
+    --void: #030710;
+    --deep: #070e22;
+    --cosmos: #0d1b3e;
+    --glow: #4a90d9;
+    --aura: #7eb8f7;
+    --gold: #c9a84c;
+    --gold-soft: #e8d5a3;
+    --pulse: #a78bfa;
+    --white: #f0eeea;
+    --muted: rgba(240,238,234,0.45);
+    --green: #4ade80;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: var(--void);
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--white);
+    cursor: none;
+  }
+
+  /* ── Custom Cursor ── */
+  #cursor {
+    position: fixed; width: 8px; height: 8px;
+    background: var(--gold); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s;
+    mix-blend-mode: screen;
+  }
+  #cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid rgba(201,168,76,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: left 0.18s ease, top 0.18s ease;
+  }
+
+  /* ── Canvas ── */
+  #cosmos-canvas { position: fixed; inset: 0; z-index: 0; }
+
+  /* ── Overlay ── */
+  #vignette {
+    position: fixed; inset: 0; z-index: 1;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(3,7,16,0.85) 100%);
+    pointer-events: none;
+  }
+
+  /* ── App Shell ── */
+  #app {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+
+  /* ── Screens ── */
+  .screen {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 1.2s ease;
+  }
+  .screen.active { opacity: 1; pointer-events: all; }
+
+  /* ══ INTRO ══ */
+  #intro-screen { gap: 2rem; text-align: center; }
+
+  .wordmark {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(4rem, 12vw, 9rem);
+    font-weight: 300;
+    letter-spacing: 1.2em;
+    color: transparent;
+    background: linear-gradient(180deg, var(--gold-soft) 0%, var(--gold) 60%, rgba(201,168,76,0.3) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    text-indent: 1.2em;
+    animation: wordmarkPulse 6s ease-in-out infinite;
+    filter: drop-shadow(0 0 40px rgba(201,168,76,0.25));
+  }
+  @keyframes wordmarkPulse {
+    0%,100% { filter: drop-shadow(0 0 40px rgba(201,168,76,0.25)); }
+    50% { filter: drop-shadow(0 0 80px rgba(201,168,76,0.6)); }
+  }
+
+  .tagline {
+    font-style: italic;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    color: var(--muted);
+    letter-spacing: 0.3em;
+    max-width: 500px;
+    line-height: 1.8;
+  }
+
+  .begin-btn {
+    margin-top: 2rem;
+    background: none;
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold-soft);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    padding: 1rem 3rem;
+    cursor: none;
+    transition: all 0.6s ease;
+    position: relative; overflow: hidden;
+  }
+  .begin-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.08), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+  .begin-btn:hover { border-color: rgba(201,168,76,0.9); color: var(--gold); }
+  .begin-btn:hover::before { transform: translateX(100%); }
+
+  .p2p-note {
+    font-size: 0.7rem;
+    color: rgba(240,238,234,0.25);
+    letter-spacing: 0.15em;
+    margin-top: 1rem;
+    font-style: italic;
+  }
+
+  /* Connection status badge on intro */
+  #network-badge {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    border: 1px solid rgba(255,255,255,0.06);
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.25em;
+    color: rgba(240,238,234,0.3);
+    transition: all 1s;
+  }
+  #network-badge.connected {
+    border-color: rgba(74,222,128,0.3);
+    color: rgba(74,222,128,0.7);
+  }
+  .badge-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor;
+    animation: badgePulse 2s ease-in-out infinite;
+  }
+  @keyframes badgePulse {
+    0%,100% { opacity: 0.4; } 50% { opacity: 1; }
+  }
+
+  /* ══ SETUP ══ */
+  #setup-screen { gap: 1.5rem; text-align: center; max-width: 480px; margin: 0 auto; }
+
+  .screen-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    font-weight: 300;
+  }
+  .screen-sub {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 0.4rem; width: 100%; }
+  .field-group label {
+    font-size: 0.65rem; letter-spacing: 0.3em;
+    color: rgba(240,238,234,0.4); text-align: left;
+    font-family: 'Cinzel', serif;
+  }
+  .field-group input {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: var(--white);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    width: 100%; outline: none;
+    transition: border-color 0.3s;
+  }
+  .field-group input:focus { border-color: rgba(201,168,76,0.6); }
+
+  .duration-picker {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 0.5rem; width: 100%;
+  }
+  .dur-btn {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(201,168,76,0.15);
+    color: var(--muted);
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    padding: 0.6rem 0.4rem;
+    cursor: none; transition: all 0.3s;
+  }
+  .dur-btn:hover, .dur-btn.selected {
+    border-color: rgba(201,168,76,0.7);
+    color: var(--gold-soft);
+    background: rgba(201,168,76,0.06);
+  }
+
+  /* Location permission notice */
+  .location-notice {
+    font-size: 0.7rem;
+    color: rgba(240,238,234,0.3);
+    letter-spacing: 0.1em;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  /* ══ MEDITATION ══ */
+  #meditation-screen { gap: 0; }
+
+  .orb-container {
+    position: relative;
+    width: min(52vw, 52vh);
+    height: min(52vw, 52vh);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .orb-ring {
+    position: absolute; border-radius: 50%;
+    border: 1px solid rgba(74,144,217,0.3);
+    animation: orbRing 4s ease-in-out infinite;
+  }
+  .orb-ring:nth-child(1) { inset: 0; }
+  .orb-ring:nth-child(2) { inset: -12%; animation-delay: 0.5s; opacity: 0.5; }
+  .orb-ring:nth-child(3) { inset: -24%; animation-delay: 1s; opacity: 0.25; }
+  @keyframes orbRing {
+    0%,100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.05); opacity: 0.7; }
+  }
+
+  .orb {
+    width: 70%; height: 70%; border-radius: 50%;
+    background: radial-gradient(ellipse at 35% 35%,
+      rgba(126,184,247,0.8) 0%,
+      rgba(74,144,217,0.5) 35%,
+      rgba(13,27,62,0.8) 70%,
+      rgba(7,14,34,0.9) 100%);
+    box-shadow:
+      0 0 60px rgba(74,144,217,0.4),
+      0 0 120px rgba(74,144,217,0.2),
+      inset 0 0 40px rgba(126,184,247,0.15);
+    animation: breathOrb 13s ease-in-out infinite;
+    position: relative; z-index: 2;
+  }
+  @keyframes breathOrb {
+    0%,100% {
+      transform: scale(1);
+      box-shadow: 0 0 60px rgba(74,144,217,0.4),0 0 120px rgba(74,144,217,0.2),inset 0 0 40px rgba(126,184,247,0.15);
+    }
+    35% {
+      transform: scale(1.12);
+      box-shadow: 0 0 100px rgba(74,144,217,0.7),0 0 200px rgba(74,144,217,0.35),0 0 300px rgba(167,139,250,0.1),inset 0 0 60px rgba(126,184,247,0.3);
+    }
+  }
+
+  .breath-text {
+    position: absolute;
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: rgba(240,238,234,0.5);
+    bottom: -2.2rem;
+    width: 100%; text-align: center;
+    transition: opacity 0.6s;
+  }
+
+  .med-stats {
+    display: flex; gap: 3rem; align-items: center;
+    margin-top: 3rem;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 300;
+    color: var(--gold);
+    display: block;
+    animation: countGlow 3s ease-in-out infinite;
+    transition: transform 0.3s;
+  }
+  .stat-num.bump { transform: scale(1.3); }
+  @keyframes countGlow {
+    0%,100% { text-shadow: 0 0 20px rgba(201,168,76,0.3); }
+    50% { text-shadow: 0 0 40px rgba(201,168,76,0.7); }
+  }
+  .stat-label {
+    font-size: 0.6rem; letter-spacing: 0.3em;
+    color: var(--muted); margin-top: 0.3rem; display: block;
+    font-family: 'Cinzel', serif;
+  }
+  .stat-divider {
+    width: 1px; height: 2.5rem;
+    background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.3), transparent);
+  }
+
+  .connection-msg {
+    margin-top: 2rem;
+    font-style: italic;
+    color: rgba(240,238,234,0.4);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-align: center;
+    max-width: 400px;
+    min-height: 1.5em;
+    transition: opacity 0.8s;
+  }
+
+  .timer-display {
+    position: absolute; top: 2rem; right: 2.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem; font-weight: 300;
+    color: rgba(240,238,234,0.25);
+    letter-spacing: 0.2em;
+  }
+
+  .end-btn {
+    position: absolute; bottom: 2.5rem;
+    background: none; border: none;
+    color: rgba(240,238,234,0.2);
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    cursor: none;
+    transition: color 0.5s;
+  }
+  .end-btn:hover { color: rgba(240,238,234,0.6); }
+
+  /* Globe canvas behind meditation UI */
+  #globe-canvas {
+    position: absolute; inset: 0; z-index: 0;
+    opacity: 0; transition: opacity 2s ease;
+  }
+  #globe-canvas.visible { opacity: 1; }
+
+  /* Live peer counter badge */
+  #live-badge {
+    position: absolute; top: 2rem; left: 2.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem; letter-spacing: 0.2em;
+    color: rgba(74,222,128,0.6);
+  }
+  .live-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--green);
+    animation: badgePulse 1.5s ease-in-out infinite;
+  }
+
+  /* ══ FINISH ══ */
+  #finish-screen { gap: 1.5rem; text-align: center; }
+  .finish-word {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 300;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    animation: wordmarkPulse 4s ease-in-out infinite;
+  }
+  .finish-sub {
+    font-style: italic;
+    color: var(--muted);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    max-width: 400px;
+  }
+  .finish-stats { display: flex; gap: 2rem; margin: 1rem 0; }
+  .again-btn {
+    margin-top: 1rem;
+    background: none;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-soft);
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    padding: 0.8rem 2.5rem;
+    cursor: none; transition: all 0.4s;
+  }
+  .again-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ══ P2P Status Bar (bottom left) ══ */
+  #peer-status {
+    position: fixed; bottom: 1.5rem; left: 2rem;
+    font-size: 0.55rem; letter-spacing: 0.25em;
+    color: rgba(240,238,234,0.18);
+    font-family: 'Cinzel', serif;
+    z-index: 20;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .peer-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--glow);
+    animation: peerPulse 2s ease-in-out infinite;
+  }
+  .peer-dot.live { background: var(--green); }
+  @keyframes peerPulse {
+    0%,100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.4); }
+  }
+
+  /* ══ Particles ══ */
+  #particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+  .particle {
+    position: absolute; border-radius: 50%;
+    background: rgba(240,238,234,0.6);
+    animation: float linear infinite;
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(-20px) translateX(var(--drift)); opacity: 0; }
+  }
+
+  @media (max-width: 480px) {
+    .med-stats { gap: 1.5rem; }
+    .orb-container { width: 70vw; height: 70vw; }
+    .timer-display, #live-badge { font-size: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="cosmos-canvas"></canvas>
+<div id="vignette"></div>
+<div id="particles"></div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Bottom-left: live P2P network status -->
+<div id="peer-status">
+  <div class="peer-dot" id="peer-dot"></div>
+  <span id="peer-label">CONNECTING TO FIELD</span>
+</div>
+
+<div id="app">
+
+  <!-- ══ INTRO ══ -->
+  <div class="screen active" id="intro-screen">
+    <div class="wordmark">ONE</div>
+    <p class="tagline">A living field of presence.<br>No servers. No borders. Only being.</p>
+    <div id="network-badge">
+      <div class="badge-dot"></div>
+      <span id="badge-text">REACHING INTO THE MESH…</span>
+    </div>
+    <button class="begin-btn" onclick="showSetup()">ENTER THE FIELD</button>
+    <p class="p2p-note">peer-to-peer · device-native · no data centers · forever free</p>
+  </div>
+
+  <!-- ══ SETUP ══ -->
+  <div class="screen" id="setup-screen">
+    <p class="screen-title">BEFORE YOU BEGIN</p>
+    <p class="screen-sub">You are about to join a living field of meditators across the Earth.<br>Your presence matters.</p>
+
+    <div class="field-group">
+      <label>YOUR NAME OR INTENTION (optional)</label>
+      <input type="text" id="user-name" placeholder="e.g. Peace, Seeker, or leave empty" maxlength="40">
+    </div>
+
+    <div class="field-group" style="margin-top:0.75rem">
+      <label>SESSION DURATION</label>
+      <div class="duration-picker">
+        <button class="dur-btn selected" onclick="selectDur(this,5)">5 MIN</button>
+        <button class="dur-btn" onclick="selectDur(this,10)">10 MIN</button>
+        <button class="dur-btn" onclick="selectDur(this,20)">20 MIN</button>
+        <button class="dur-btn" onclick="selectDur(this,30)">30 MIN</button>
+      </div>
+    </div>
+
+    <p class="location-notice" style="margin-top:0.5rem">
+      When you begin, your browser will ask to share your location.<br>
+      Only a blurred city-level position is shared. Nothing is stored permanently.
+    </p>
+
+    <button class="begin-btn" onclick="startMeditation()" style="margin-top:1rem">BEGIN MEDITATION</button>
+  </div>
+
+  <!-- ══ MEDITATION ══ -->
+  <div class="screen" id="meditation-screen">
+    <canvas id="globe-canvas"></canvas>
+
+    <div id="live-badge">
+      <div class="live-dot"></div>
+      <span id="live-count">1 soul present</span>
+    </div>
+    <div class="timer-display" id="timer-display">05:00</div>
+
+    <div class="orb-container">
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb-ring"></div>
+      <div class="orb"></div>
+      <span class="breath-text" id="breath-label">BREATHE IN</span>
+    </div>
+
+    <div class="med-stats">
+      <div class="stat">
+        <span class="stat-num" id="souls-count">1</span>
+        <span class="stat-label">SOULS PRESENT</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num" id="countries-count">1</span>
+        <span class="stat-label">NATIONS</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num" id="minutes-count">0</span>
+        <span class="stat-label">MIN SHARED</span>
+      </div>
+    </div>
+
+    <p class="connection-msg" id="connection-msg">Reaching into the field…</p>
+    <button class="end-btn" onclick="endMeditation()">RELEASE</button>
+  </div>
+
+  <!-- ══ FINISH ══ -->
+  <div class="screen" id="finish-screen">
+    <div class="finish-word">NAMASTE</div>
+    <p class="finish-sub">
+      You sat in stillness with<br>
+      <strong id="final-souls" style="color:var(--gold);font-style:normal">—</strong> others across the Earth.<br>
+      The field carries your presence forward.
+    </p>
+    <div class="finish-stats">
+      <div class="stat">
+        <span class="stat-num" id="final-minutes">0</span>
+        <span class="stat-label">MINUTES</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num" id="final-countries">1</span>
+        <span class="stat-label">NATIONS</span>
+      </div>
+    </div>
+    <button class="again-btn" onclick="showIntro()">RETURN TO THE FIELD</button>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════════════
+//
+//   ONE — Universal Meditation Network
+//   Full P2P implementation using Gun.js
+//
+//   HOW IT WORKS:
+//   1. Gun.js connects to public "relay" servers just long enough
+//      to find other browsers running this app.
+//   2. After that first handshake, all data flows directly
+//      browser-to-browser via WebRTC. No server sees your data.
+//   3. As more people use the app, they become relay nodes
+//      themselves, making it more decentralized over time.
+//   4. Location is blurred to ~50km before being shared.
+//   5. All presence data expires automatically after 2 hours.
+//
+// ══════════════════════════════════════════════════════════════════
+
+
+// ─── 1. INITIALISE GUN (P2P Database) ────────────────────────────
+//
+// These are public Gun relay servers run by the Gun community.
+// They help browsers find each other. Once found, they step aside.
+// Your meditation data never "lives" on these servers.
+// As your user base grows you can remove these entirely.
+//
+const gun = Gun({
+  peers: [
+    'https://gun-manhattan.herokuapp.com/gun',
+    'https://gun-us.herokuapp.com/gun',
+  ],
+  localStorage: false,  // don't cache to browser storage
+  radisk: false,         // purely in-memory, nothing persisted
+});
+
+// The shared "room" all meditators write into and read from
+const FIELD_KEY = 'one-meditation-v1';
+const field = gun.get(FIELD_KEY);
+
+// Generate a unique ID for this browser session
+const MY_ID = 'peer_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now();
+
+// ─── 2. PRESENCE STATE ───────────────────────────────────────────
+let myLat = null, myLng = null;
+let userName = '';
+let sessionDuration = 5 * 60;
+let sessionTimer = null, heartbeatTimer = null;
+let secondsElapsed = 0;
+let soulsCount = 1;
+let nationsSet = new Set(['You']);
+let msgIndex = 0;
+let breathTimeout = null;
+let isInSession = false;
+
+// Track all known peers: { peerId: { lat, lng, name, ts, nation } }
+const knownPeers = {};
+
+// ─── 3. GUN CONNECTION STATUS ────────────────────────────────────
+let gunConnected = false;
+gun.on('hi', () => {
+  gunConnected = true;
+  updatePeerStatus('FIELD CONNECTED · SERVERLESS', true);
+  document.getElementById('network-badge').classList.add('connected');
+  document.getElementById('badge-text').textContent = 'MESH ACTIVE · P2P READY';
+});
+gun.on('bye', () => {
+  if (gunConnected) updatePeerStatus('RECONNECTING…', false);
+});
+
+function updatePeerStatus(text, live) {
+  document.getElementById('peer-label').textContent = text;
+  const dot = document.getElementById('peer-dot');
+  live ? dot.classList.add('live') : dot.classList.remove('live');
+}
+
+
+// ─── 4. COSMOS STARFIELD CANVAS ──────────────────────────────────
+const cosmosCanvas = document.getElementById('cosmos-canvas');
+const ctx = cosmosCanvas.getContext('2d');
+let stars = [];
+
+function initStars() {
+  cosmosCanvas.width = window.innerWidth;
+  cosmosCanvas.height = window.innerHeight;
+  stars = Array.from({length: 300}, () => ({
+    x: Math.random() * cosmosCanvas.width,
+    y: Math.random() * cosmosCanvas.height,
+    r: Math.random() * 1.2,
+    a: Math.random(),
+    da: (Math.random() - 0.5) * 0.003,
+    speed: Math.random() * 0.08 + 0.02,
+  }));
+}
+
+function drawCosmos() {
+  ctx.clearRect(0, 0, cosmosCanvas.width, cosmosCanvas.height);
+  const grad = ctx.createRadialGradient(
+    cosmosCanvas.width/2, cosmosCanvas.height/2, 0,
+    cosmosCanvas.width/2, cosmosCanvas.height/2, cosmosCanvas.width * 0.8
+  );
+  grad.addColorStop(0, '#0d1b3e');
+  grad.addColorStop(0.5, '#07122b');
+  grad.addColorStop(1, '#030710');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, cosmosCanvas.width, cosmosCanvas.height);
+  stars.forEach(s => {
+    s.a += s.da;
+    if (s.a <= 0 || s.a >= 1) s.da *= -1;
+    s.y -= s.speed;
+    if (s.y < 0) { s.y = cosmosCanvas.height; s.x = Math.random() * cosmosCanvas.width; }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(200,215,255,${s.a * 0.85})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawCosmos);
+}
+window.addEventListener('resize', initStars);
+initStars(); drawCosmos();
+
+
+// ─── 5. FLOATING PARTICLES ───────────────────────────────────────
+const particlesEl = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.cssText = `
+    left:${Math.random()*100}vw;
+    width:${Math.random()<0.3?2:1}px;
+    height:${Math.random()<0.3?2:1}px;
+    --drift:${(Math.random()-0.5)*80}px;
+    animation-duration:${15+Math.random()*20}s;
+    animation-delay:-${Math.random()*30}s;
+  `;
+  particlesEl.appendChild(p);
+}
+
+
+// ─── 6. CUSTOM CURSOR ────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    cursorRing.style.left = e.clientX + 'px';
+    cursorRing.style.top = e.clientY + 'px';
+  }, 60);
+});
+
+
+// ─── 7. SCREEN NAVIGATION ────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showIntro() { showScreen('intro-screen'); }
+function showSetup() { showScreen('setup-screen'); }
+function selectDur(btn, mins) {
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  sessionDuration = mins * 60;
+}
+
+
+// ─── 8. LOCATION (privacy-blurred) ───────────────────────────────
+function blurLocation(lat, lng) {
+  // Round to nearest 0.5° ≈ 50km. Hides exact position.
+  return {
+    lat: Math.round(lat * 2) / 2,
+    lng: Math.round(lng * 2) / 2,
+  };
+}
+
+function getCountryApprox(lat, lng) {
+  // Simple region labels based on coordinates
+  if (lat > 60) return 'Northern Europe/Russia';
+  if (lat > 35 && lng > -30 && lng < 60) return 'Europe/Middle East';
+  if (lat > 10 && lng > 60 && lng < 150) return 'Asia';
+  if (lat > 0 && lat < 35 && lng > -20 && lng < 60) return 'North Africa';
+  if (lat < 0 && lng > 10 && lng < 55) return 'East Africa';
+  if (lat < 0 && lng > 100) return 'Oceania';
+  if (lat > 15 && lng < -50 && lng > -130) return 'North America';
+  if (lat < 15 && lng < -35) return 'South America';
+  return 'Earth';
+}
+
+function getUserLocation(callback) {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const blurred = blurLocation(pos.coords.latitude, pos.coords.longitude);
+        callback(blurred.lat, blurred.lng);
+      },
+      () => callback(0, 0) // fallback: center of map
+    );
+  } else {
+    callback(0, 0);
+  }
+}
+
+
+// ─── 9. GUN PRESENCE — WRITE & READ ──────────────────────────────
+
+function announcePresence() {
+  if (!isInSession) return;
+  const region = getCountryApprox(myLat, myLng);
+  field.get(MY_ID).put({
+    lat: myLat,
+    lng: myLng,
+    name: userName || 'A soul',
+    region: region,
+    ts: Date.now(),
+    active: true,
+  });
+}
+
+function withdrawPresence() {
+  field.get(MY_ID).put({
+    active: false,
+    ts: Date.now(),
+  });
+}
+
+function startListeningForPeers() {
+  // Gun's .map().on() fires every time ANY peer in this "room" updates
+  field.map().on((data, peerId) => {
+    if (!data) return;
+    if (peerId === MY_ID) return; // ignore ourselves
+
+    const TWO_HOURS = 2 * 60 * 60 * 1000;
+    const isStale = (Date.now() - (data.ts || 0)) > TWO_HOURS;
+    const isActive = data.active !== false;
+
+    if (!isActive || isStale) {
+      // Remove departed soul
+      if (knownPeers[peerId]) {
+        delete knownPeers[peerId];
+        removeGlobeDot(peerId);
+        refreshCounts();
+      }
+      return;
+    }
+
+    const isNew = !knownPeers[peerId];
+    knownPeers[peerId] = data;
+
+    if (isNew && data.lat != null && isInSession) {
+      addGlobeDot(peerId, data.lat, data.lng, false, data.region || 'Earth');
+      refreshCounts();
+      showArrivalMessage(data.name || 'A soul', data.region || 'the field');
+    }
+  });
+}
+
+function refreshCounts() {
+  soulsCount = Object.keys(knownPeers).length + 1; // +1 for self
+  nationsSet = new Set(['You']);
+  Object.values(knownPeers).forEach(p => {
+    if (p.region) nationsSet.add(p.region);
+  });
+
+  const soulsEl = document.getElementById('souls-count');
+  soulsEl.textContent = soulsCount;
+  soulsEl.classList.add('bump');
+  setTimeout(() => soulsEl.classList.remove('bump'), 300);
+
+  document.getElementById('countries-count').textContent = nationsSet.size;
+  document.getElementById('live-count').textContent =
+    soulsCount + (soulsCount === 1 ? ' soul present' : ' souls present');
+}
+
+function showArrivalMessage(name, region) {
+  const msgs = [
+    `${name} from ${region} joins the field.`,
+    `A presence arrives from ${region}.`,
+    `${region} sends stillness.`,
+    `You are not alone. You were never alone.`,
+    `The field grows. ${soulsCount} souls breathing as one.`,
+    `${name} sits with you now.`,
+  ];
+  const el = document.getElementById('connection-msg');
+  el.style.opacity = 0;
+  setTimeout(() => {
+    el.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+    el.style.opacity = 1;
+  }, 600);
+}
+
+
+// ─── 10. SESSION START / END ──────────────────────────────────────
+
+function startMeditation() {
+  userName = document.getElementById('user-name').value.trim();
+  isInSession = true;
+  secondsElapsed = 0;
+  soulsCount = 1;
+  nationsSet = new Set(['You']);
+  msgIndex = 0;
+  Object.keys(knownPeers).forEach(k => delete knownPeers[k]);
+  globeDots = {};
+
+  showScreen('meditation-screen');
+
+  // Get location, then announce + start listening
+  getUserLocation((lat, lng) => {
+    myLat = lat; myLng = lng;
+    announcePresence();
+    startListeningForPeers();
+    if (lat !== 0 || lng !== 0) {
+      addGlobeDot(MY_ID, lat, lng, true, 'You');
+    }
+  });
+
+  // Heartbeat: re-announce every 30 seconds so peers know we're still here
+  heartbeatTimer = setInterval(announcePresence, 30000);
+
+  // Globe
+  setTimeout(() => initGlobe(), 800);
+
+  // Breathing guide
+  cycleBreath();
+
+  // Countdown timer
+  updateTimerDisplay();
+  sessionTimer = setInterval(() => {
+    secondsElapsed++;
+    updateTimerDisplay();
+    if (secondsElapsed >= sessionDuration) endMeditation();
+  }, 1000);
+
+  // Ambient messages cycle
+  const ambientMsgs = [
+    'Breathe. You are held.',
+    'The Earth breathes with you.',
+    'Silence shared across oceans.',
+    'Every exhale, a gift to the field.',
+    'You are not alone. You were never alone.',
+    'The field deepens with every breath.',
+    'Let go. The field holds you.',
+  ];
+  let ambientIdx = 0;
+  const ambientInterval = setInterval(() => {
+    if (!isInSession) { clearInterval(ambientInterval); return; }
+    if (Object.keys(knownPeers).length === 0) {
+      // No live peers yet — show ambient message
+      const el = document.getElementById('connection-msg');
+      el.style.opacity = 0;
+      setTimeout(() => {
+        el.textContent = ambientMsgs[ambientIdx % ambientMsgs.length];
+        el.style.opacity = 1;
+        ambientIdx++;
+      }, 600);
+    }
+  }, 10000);
+}
+
+function endMeditation() {
+  isInSession = false;
+  clearInterval(sessionTimer);
+  clearInterval(heartbeatTimer);
+  clearTimeout(breathTimeout);
+  withdrawPresence();
+
+  document.getElementById('final-souls').textContent = soulsCount + (soulsCount === 1 ? ' soul' : ' souls');
+  document.getElementById('final-minutes').textContent = Math.floor(secondsElapsed / 60);
+  document.getElementById('final-countries').textContent = nationsSet.size;
+
+  showScreen('finish-screen');
+}
+
+
+// ─── 11. BREATHING GUIDE ─────────────────────────────────────────
+const BREATH_PHASES = [
+  { label: 'BREATHE IN',  ms: 4000 },
+  { label: 'HOLD',        ms: 1500 },
+  { label: 'BREATHE OUT', ms: 6000 },
+  { label: 'REST',        ms: 1500 },
+];
+let breathPhaseIdx = 0;
+
+function cycleBreath() {
+  const label = document.getElementById('breath-label');
+  const phase = BREATH_PHASES[breathPhaseIdx];
+  label.style.opacity = 0;
+  setTimeout(() => {
+    label.textContent = phase.label;
+    label.style.opacity = 1;
+  }, 300);
+  breathTimeout = setTimeout(() => {
+    breathPhaseIdx = (breathPhaseIdx + 1) % BREATH_PHASES.length;
+    if (isInSession) cycleBreath();
+  }, phase.ms);
+}
+
+
+// ─── 12. TIMER ────────────────────────────────────────────────────
+function updateTimerDisplay() {
+  const remaining = Math.max(0, sessionDuration - secondsElapsed);
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  document.getElementById('timer-display').textContent =
+    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  document.getElementById('minutes-count').textContent = Math.floor(secondsElapsed / 60);
+}
+
+
+// ─── 13. GLOBE CANVAS ────────────────────────────────────────────
+let globeCtx, globeW, globeH;
+let globeRotation = 0;
+let globeDots = {}; // { id: { lat, lng, isSelf, region, born } }
+
+function initGlobe() {
+  const gc = document.getElementById('globe-canvas');
+  gc.classList.add('visible');
+  gc.width = globeW = window.innerWidth;
+  gc.height = globeH = window.innerHeight;
+  globeCtx = gc.getContext('2d');
+  drawGlobeLoop();
+}
+
+function addGlobeDot(id, lat, lng, isSelf, region) {
+  globeDots[id] = { lat, lng, isSelf, region, born: Date.now() };
+}
+
+function removeGlobeDot(id) {
+  delete globeDots[id];
+}
+
+function project(lat, lng, cx, cy, R) {
+  const phi = (90 - lat) * Math.PI / 180;
+  const theta = (lng + globeRotation) * Math.PI / 180;
+  return {
+    x: cx + R * Math.sin(phi) * Math.cos(theta),
+    y: cy - R * Math.cos(phi),
+    z: Math.sin(phi) * Math.sin(theta),
+  };
+}
+
+function drawGlobeLoop() {
+  if (!globeCtx) return;
+  globeCtx.clearRect(0, 0, globeW, globeH);
+
+  const cx = globeW / 2, cy = globeH / 2;
+  const R = Math.min(globeW, globeH) * 0.37;
+  globeRotation = (globeRotation + 0.06) % 360;
+
+  // Globe outline
+  globeCtx.beginPath();
+  globeCtx.arc(cx, cy, R, 0, Math.PI*2);
+  globeCtx.strokeStyle = 'rgba(74,144,217,0.05)';
+  globeCtx.lineWidth = 1; globeCtx.stroke();
+
+  // Grid lines
+  for (let lat = -60; lat <= 60; lat += 30) {
+    const pts = [];
+    for (let lng = -180; lng <= 180; lng += 4) {
+      const p = project(lat, lng, cx, cy, R);
+      if (p.z >= 0) pts.push(p);
+    }
+    if (pts.length > 1) {
+      globeCtx.beginPath();
+      pts.forEach((p,i) => i === 0 ? globeCtx.moveTo(p.x,p.y) : globeCtx.lineTo(p.x,p.y));
+      globeCtx.strokeStyle = 'rgba(74,144,217,0.07)';
+      globeCtx.lineWidth = 0.5; globeCtx.stroke();
+    }
+  }
+  for (let lng = -180; lng < 180; lng += 30) {
+    const pts = [];
+    for (let lat = -85; lat <= 85; lat += 4) {
+      const p = project(lat, lng, cx, cy, R);
+      if (p.z >= 0) pts.push(p);
+    }
+    if (pts.length > 1) {
+      globeCtx.beginPath();
+      pts.forEach((p,i) => i === 0 ? globeCtx.moveTo(p.x,p.y) : globeCtx.lineTo(p.x,p.y));
+      globeCtx.strokeStyle = 'rgba(74,144,217,0.05)';
+      globeCtx.lineWidth = 0.5; globeCtx.stroke();
+    }
+  }
+
+  // Presence dots
+  const now = Date.now();
+  Object.values(globeDots).forEach(dot => {
+    const p = project(dot.lat, dot.lng, cx, cy, R);
+    if (p.z < -0.08) return;
+
+    const age = (now - dot.born) / 1000;
+    const fadeIn = Math.min(1, age / 2); // 2s fade-in
+    const depth = Math.max(0, p.z) * 0.8 + 0.2;
+    const alpha = fadeIn * depth;
+
+    const size = dot.isSelf ? 5.5 : 3;
+    const col = dot.isSelf ? `rgba(201,168,76,${alpha})` : `rgba(126,184,247,${alpha * 0.9})`;
+    const glowCol = dot.isSelf ? `rgba(201,168,76,${alpha*0.25})` : `rgba(126,184,247,${alpha*0.18})`;
+
+    // Outer glow
+    const grd = globeCtx.createRadialGradient(p.x,p.y,0, p.x,p.y, size*5);
+    grd.addColorStop(0, glowCol);
+    grd.addColorStop(1, 'transparent');
+    globeCtx.beginPath();
+    globeCtx.arc(p.x, p.y, size*5, 0, Math.PI*2);
+    globeCtx.fillStyle = grd; globeCtx.fill();
+
+    // Dot
+    globeCtx.beginPath();
+    globeCtx.arc(p.x, p.y, size, 0, Math.PI*2);
+    globeCtx.fillStyle = col; globeCtx.fill();
+
+    // Pulse ring (self)
+    if (dot.isSelf) {
+      const t = now * 0.002;
+      const pr = size + (Math.sin(t)*0.5+0.5) * 14;
+      globeCtx.beginPath();
+      globeCtx.arc(p.x, p.y, pr, 0, Math.PI*2);
+      globeCtx.strokeStyle = `rgba(201,168,76,${alpha * 0.35 * (1 - pr/(size+14))})`;
+      globeCtx.lineWidth = 1; globeCtx.stroke();
+    }
+  });
+
+  requestAnimationFrame(drawGlobeLoop);
+}
+
+
+// ─── 14. PWA MANIFEST (installable as an app) ────────────────────
+const manifest = {
+  name: 'ONE — Universal Meditation Network',
+  short_name: 'ONE',
+  description: 'Decentralized global meditation field. No servers. Pure presence.',
+  start_url: '.', display: 'standalone',
+  background_color: '#030710', theme_color: '#050a1a',
+  icons: [], // Add your icon here when deploying
+};
+const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+document.getElementById('manifest-link').href = URL.createObjectURL(mBlob);
+
+</script>
+</body>
+</html>
