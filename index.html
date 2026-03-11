@@ -2,551 +2,718 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050a1a">
-<meta name="description" content="Connect with meditators worldwide. No servers. No data centers. Pure peer-to-peer consciousness.">
-<title>ONE — Universal Meditation Network</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#030710">
+<meta name="description" content="The world needs help. Connecting to universal consciousness is the answer. ONE is completely free, collects no data, has no agenda.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ONE">
+<meta name="mobile-web-app-capable" content="yes">
+<title>ONE</title>
 <link rel="manifest" href="#" id="manifest-link">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Cinzel:wght@300;400&display=swap" rel="stylesheet">
-
-<!-- ═══════════════════════════════════════════════════════
-     GUN.JS — The P2P database that runs in every browser.
-     This single script enables device-to-device connections
-     with NO servers, NO accounts, NO data centers.
-     Each browser that opens this app becomes part of the mesh.
-     ═══════════════════════════════════════════════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gun/sea.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gun/axe.js"></script>
 
 <style>
-  :root {
-    --void: #030710;
-    --deep: #070e22;
-    --cosmos: #0d1b3e;
-    --glow: #4a90d9;
-    --aura: #7eb8f7;
-    --gold: #c9a84c;
-    --gold-soft: #e8d5a3;
-    --pulse: #a78bfa;
-    --white: #f0eeea;
-    --muted: rgba(240,238,234,0.45);
-    --green: #4ade80;
-  }
+:root {
+  --void: #030710;
+  --gold: #c9a84c;
+  --gold-soft: #e8d5a3;
+  --aura: #7eb8f7;
+  --white: #f0eeea;
+  --muted: rgba(240,238,234,0.4);
+  --green: #4ade80;
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-  html, body {
-    width: 100%; height: 100%; overflow: hidden;
-    background: var(--void);
-    font-family: 'Cormorant Garamond', serif;
-    color: var(--white);
-    cursor: none;
-  }
+html, body {
+  width:100%; height:100%; overflow:hidden;
+  background:var(--void);
+  font-family:'Cormorant Garamond', serif;
+  color:var(--white);
+  cursor:none;
+}
 
-  /* ── Custom Cursor ── */
-  #cursor {
-    position: fixed; width: 8px; height: 8px;
-    background: var(--gold); border-radius: 50%;
-    pointer-events: none; z-index: 9999;
-    transform: translate(-50%,-50%);
-    transition: transform 0.1s, width 0.3s, height 0.3s;
-    mix-blend-mode: screen;
-  }
-  #cursor-ring {
-    position: fixed; width: 36px; height: 36px;
-    border: 1px solid rgba(201,168,76,0.4); border-radius: 50%;
-    pointer-events: none; z-index: 9998;
-    transform: translate(-50%,-50%);
-    transition: left 0.18s ease, top 0.18s ease;
-  }
+/* ── Cursor ── */
+#cursor { position:fixed; width:6px; height:6px; background:var(--gold); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); mix-blend-mode:screen; transition:width 0.3s,height 0.3s; }
+#cursor-ring { position:fixed; width:32px; height:32px; border:1px solid rgba(201,168,76,0.35); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:left 0.15s ease,top 0.15s ease; }
 
-  /* ── Canvas ── */
-  #cosmos-canvas { position: fixed; inset: 0; z-index: 0; }
+/* ── Starfield ── */
+#stars-canvas { position:fixed; inset:0; z-index:0; }
 
-  /* ── Overlay ── */
-  #vignette {
-    position: fixed; inset: 0; z-index: 1;
-    background: radial-gradient(ellipse at center, transparent 30%, rgba(3,7,16,0.85) 100%);
-    pointer-events: none;
-  }
+/* ── Vignette ── */
+#vignette { position:fixed; inset:0; z-index:1; background:radial-gradient(ellipse at center,transparent 25%,rgba(3,7,16,0.9) 100%); pointer-events:none; }
 
-  /* ── App Shell ── */
-  #app {
-    position: fixed; inset: 0; z-index: 10;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-  }
+/* ── Particles ── */
+#particles { position:fixed; inset:0; z-index:2; pointer-events:none; overflow:hidden; }
+.particle { position:absolute; border-radius:50%; background:rgba(240,238,234,0.5); animation:floatUp linear infinite; }
+@keyframes floatUp { 0%{transform:translateY(100vh) translateX(0);opacity:0} 8%{opacity:0.8} 92%{opacity:0.3} 100%{transform:translateY(-10px) translateX(var(--dx));opacity:0} }
 
-  /* ── Screens ── */
-  .screen {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 2rem;
-    opacity: 0; pointer-events: none;
-    transition: opacity 1.2s ease;
-  }
-  .screen.active { opacity: 1; pointer-events: all; }
+/* ── App Shell ── */
+#app { position:fixed; inset:0; z-index:10; display:flex; align-items:center; justify-content:center; }
+.screen { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; opacity:0; pointer-events:none; transition:opacity 1.4s ease; }
+.screen.active { opacity:1; pointer-events:all; }
 
-  /* ══ INTRO ══ */
-  #intro-screen { gap: 2rem; text-align: center; }
+/* ════════════════════════════════
+   INTRO — condensed, button-first
+════════════════════════════════ */
+#intro-screen {
+  gap:1.8rem;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding-top:max(3rem, env(safe-area-inset-top, 3rem));
+  padding-bottom:max(3rem, calc(env(safe-area-inset-bottom, 0px) + 3rem));
+  scrollbar-width:none;
+}
+#intro-screen::-webkit-scrollbar { display:none; }
 
-  .wordmark {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(4rem, 12vw, 9rem);
-    font-weight: 300;
-    letter-spacing: 1.2em;
-    color: transparent;
-    background: linear-gradient(180deg, var(--gold-soft) 0%, var(--gold) 60%, rgba(201,168,76,0.3) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    text-indent: 1.2em;
-    animation: wordmarkPulse 6s ease-in-out infinite;
-    filter: drop-shadow(0 0 40px rgba(201,168,76,0.25));
-  }
-  @keyframes wordmarkPulse {
-    0%,100% { filter: drop-shadow(0 0 40px rgba(201,168,76,0.25)); }
-    50% { filter: drop-shadow(0 0 80px rgba(201,168,76,0.6)); }
-  }
+.intro-wordmark-wrap { display:flex; flex-direction:column; align-items:center; gap:0.8rem; }
 
-  .tagline {
-    font-style: italic;
-    font-size: clamp(0.9rem, 2vw, 1.2rem);
-    color: var(--muted);
-    letter-spacing: 0.3em;
-    max-width: 500px;
-    line-height: 1.8;
-  }
+.intro-divider {
+  width:40px; height:1px;
+  background:linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent);
+  margin:0 auto;
+}
 
-  .begin-btn {
-    margin-top: 2rem;
-    background: none;
-    border: 1px solid rgba(201,168,76,0.4);
-    color: var(--gold-soft);
-    font-family: 'Cinzel', serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.4em;
-    padding: 1rem 3rem;
-    cursor: none;
-    transition: all 0.6s ease;
-    position: relative; overflow: hidden;
-  }
-  .begin-btn::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.08), transparent);
-    transform: translateX(-100%);
-    transition: transform 0.6s ease;
-  }
-  .begin-btn:hover { border-color: rgba(201,168,76,0.9); color: var(--gold); }
-  .begin-btn:hover::before { transform: translateX(100%); }
+/* Why toggle button */
+.why-toggle {
+  background:none;
+  border:none;
+  color:rgba(240,238,234,0.25);
+  font-family:'Cinzel', serif;
+  font-size:0.5rem;
+  letter-spacing:0.35em;
+  cursor:none;
+  padding:0.3rem 0;
+  transition:color 0.4s;
+}
+.why-toggle:hover { color:rgba(201,168,76,0.6); }
 
-  .p2p-note {
-    font-size: 0.7rem;
-    color: rgba(240,238,234,0.25);
-    letter-spacing: 0.15em;
-    margin-top: 1rem;
-    font-style: italic;
-  }
+/* Collapsible why panel */
+.why-panel {
+  max-width:400px;
+  width:100%;
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.7s ease, opacity 0.5s ease;
+  opacity:0;
+}
+.why-panel.open {
+  max-height:80vh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  opacity:1;
+  scrollbar-width:none;
+}
+.why-panel.open::-webkit-scrollbar { display:none; }
 
-  /* Connection status badge on intro */
-  #network-badge {
-    display: flex; align-items: center; gap: 0.5rem;
-    padding: 0.4rem 1rem;
-    border: 1px solid rgba(255,255,255,0.06);
-    font-family: 'Cinzel', serif;
-    font-size: 0.55rem;
-    letter-spacing: 0.25em;
-    color: rgba(240,238,234,0.3);
-    transition: all 1s;
-  }
-  #network-badge.connected {
-    border-color: rgba(74,222,128,0.3);
-    color: rgba(74,222,128,0.7);
-  }
-  .badge-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: currentColor;
-    animation: badgePulse 2s ease-in-out infinite;
-  }
-  @keyframes badgePulse {
-    0%,100% { opacity: 0.4; } 50% { opacity: 1; }
-  }
+.manifesto-block {
+  max-width:400px;
+  width:100%;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  gap:1.3rem;
+}
 
-  /* ══ SETUP ══ */
-  #setup-screen { gap: 1.5rem; text-align: center; max-width: 480px; margin: 0 auto; }
+.manifesto-lead {
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:clamp(1rem,2.8vw,1.2rem);
+  line-height:1.75;
+  color:rgba(232,213,163,0.75);
+  letter-spacing:0.04em;
+  text-align:center;
+}
 
-  .screen-title {
-    font-family: 'Cinzel', serif;
-    font-size: 1rem;
-    letter-spacing: 0.4em;
-    color: var(--gold);
-    margin-bottom: 0.5rem;
-    font-weight: 300;
-  }
-  .screen-sub {
-    font-style: italic;
-    color: var(--muted);
-    font-size: 1rem;
-    line-height: 1.7;
-    margin-bottom: 1rem;
-  }
+.manifesto-p {
+  font-family:'Cormorant Garamond', serif;
+  font-size:clamp(0.82rem,2vw,0.93rem);
+  line-height:1.9;
+  color:rgba(240,238,234,0.42);
+  letter-spacing:0.04em;
+}
+.manifesto-p strong { color:rgba(232,213,163,0.7); font-weight:400; }
 
-  .field-group { display: flex; flex-direction: column; gap: 0.4rem; width: 100%; }
-  .field-group label {
-    font-size: 0.65rem; letter-spacing: 0.3em;
-    color: rgba(240,238,234,0.4); text-align: left;
-    font-family: 'Cinzel', serif;
-  }
-  .field-group input {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(201,168,76,0.2);
-    color: var(--white);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    padding: 0.75rem 1rem;
-    width: 100%; outline: none;
-    transition: border-color 0.3s;
-  }
-  .field-group input:focus { border-color: rgba(201,168,76,0.6); }
+.manifesto-pull {
+  border-left:1px solid rgba(201,168,76,0.25);
+  padding-left:1.2rem;
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:clamp(0.88rem,2.2vw,1rem);
+  line-height:1.8;
+  color:rgba(232,213,163,0.55);
+  letter-spacing:0.05em;
+}
 
-  .duration-picker {
-    display: grid; grid-template-columns: repeat(4,1fr); gap: 0.5rem; width: 100%;
-  }
-  .dur-btn {
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(201,168,76,0.15);
-    color: var(--muted);
-    font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    padding: 0.6rem 0.4rem;
-    cursor: none; transition: all 0.3s;
-  }
-  .dur-btn:hover, .dur-btn.selected {
-    border-color: rgba(201,168,76,0.7);
-    color: var(--gold-soft);
-    background: rgba(201,168,76,0.06);
-  }
+.manifesto-action {
+  background:rgba(201,168,76,0.04);
+  border:1px solid rgba(201,168,76,0.12);
+  padding:1.2rem 1.4rem;
+  display:flex;
+  flex-direction:column;
+  gap:0.6rem;
+}
+.manifesto-action-title {
+  font-family:'Cinzel', serif;
+  font-size:0.48rem;
+  letter-spacing:0.4em;
+  color:rgba(201,168,76,0.55);
+}
+.manifesto-action-body {
+  font-family:'Cormorant Garamond', serif;
+  font-size:clamp(0.8rem,2vw,0.9rem);
+  line-height:1.85;
+  color:rgba(240,238,234,0.4);
+  letter-spacing:0.03em;
+}
+.manifesto-action-body strong { color:rgba(232,213,163,0.65); font-weight:400; }
 
-  /* Location permission notice */
-  .location-notice {
-    font-size: 0.7rem;
-    color: rgba(240,238,234,0.3);
-    letter-spacing: 0.1em;
-    font-style: italic;
-    line-height: 1.6;
-  }
+.intro-cta-wrap {
+  display:flex; flex-direction:column; align-items:center; gap:1rem; width:100%;
+}
 
-  /* ══ MEDITATION ══ */
-  #meditation-screen { gap: 0; }
+.wordmark {
+  font-family:'Cinzel', serif;
+  font-size:clamp(5rem,14vw,10rem);
+  font-weight:300;
+  letter-spacing:1.4em;
+  text-indent:1.4em;
+  color:transparent;
+  background:linear-gradient(175deg, var(--gold-soft) 0%, var(--gold) 55%, rgba(201,168,76,0.2) 100%);
+  -webkit-background-clip:text; background-clip:text;
+  animation:wordGlow 7s ease-in-out infinite;
+}
+@keyframes wordGlow {
+  0%,100% { filter:drop-shadow(0 0 30px rgba(201,168,76,0.2)); }
+  50% { filter:drop-shadow(0 0 70px rgba(201,168,76,0.55)); }
+}
 
-  .orb-container {
-    position: relative;
-    width: min(52vw, 52vh);
-    height: min(52vw, 52vh);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
+.tagline {
+  font-style:italic;
+  font-size:clamp(0.85rem,1.8vw,1.1rem);
+  color:var(--muted);
+  letter-spacing:0.35em;
+  line-height:2;
+  max-width:440px;
+}
 
-  .orb-ring {
-    position: absolute; border-radius: 50%;
-    border: 1px solid rgba(74,144,217,0.3);
-    animation: orbRing 4s ease-in-out infinite;
-  }
-  .orb-ring:nth-child(1) { inset: 0; }
-  .orb-ring:nth-child(2) { inset: -12%; animation-delay: 0.5s; opacity: 0.5; }
-  .orb-ring:nth-child(3) { inset: -24%; animation-delay: 1s; opacity: 0.25; }
-  @keyframes orbRing {
-    0%,100% { transform: scale(1); opacity: 0.3; }
-    50% { transform: scale(1.05); opacity: 0.7; }
-  }
+#mesh-badge {
+  display:flex; align-items:center; gap:0.6rem;
+  border:1px solid rgba(255,255,255,0.05);
+  padding:0.4rem 1rem;
+  font-family:'Cinzel', serif;
+  font-size:0.5rem; letter-spacing:0.3em;
+  color:rgba(240,238,234,0.25);
+  transition:all 1.2s;
+}
+#mesh-badge.live { border-color:rgba(74,222,128,0.25); color:rgba(74,222,128,0.6); }
+.mesh-dot { width:4px; height:4px; border-radius:50%; background:currentColor; animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
-  .orb {
-    width: 70%; height: 70%; border-radius: 50%;
-    background: radial-gradient(ellipse at 35% 35%,
-      rgba(126,184,247,0.8) 0%,
-      rgba(74,144,217,0.5) 35%,
-      rgba(13,27,62,0.8) 70%,
-      rgba(7,14,34,0.9) 100%);
-    box-shadow:
-      0 0 60px rgba(74,144,217,0.4),
-      0 0 120px rgba(74,144,217,0.2),
-      inset 0 0 40px rgba(126,184,247,0.15);
-    animation: breathOrb 13s ease-in-out infinite;
-    position: relative; z-index: 2;
-  }
-  @keyframes breathOrb {
-    0%,100% {
-      transform: scale(1);
-      box-shadow: 0 0 60px rgba(74,144,217,0.4),0 0 120px rgba(74,144,217,0.2),inset 0 0 40px rgba(126,184,247,0.15);
-    }
-    35% {
-      transform: scale(1.12);
-      box-shadow: 0 0 100px rgba(74,144,217,0.7),0 0 200px rgba(74,144,217,0.35),0 0 300px rgba(167,139,250,0.1),inset 0 0 60px rgba(126,184,247,0.3);
-    }
-  }
+.enter-btn {
+  background:none;
+  border:1px solid rgba(201,168,76,0.35);
+  color:var(--gold-soft);
+  font-family:'Cinzel', serif;
+  font-size:0.7rem; letter-spacing:0.45em;
+  padding:1rem 3.5rem;
+  cursor:none;
+  transition:all 0.7s ease;
+  position:relative; overflow:hidden;
+}
+.enter-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(201,168,76,0.07),transparent); transform:translateX(-100%); transition:transform 0.7s; }
+.enter-btn:hover { border-color:rgba(201,168,76,0.8); color:var(--gold); }
+.enter-btn:hover::after { transform:translateX(100%); }
 
-  .breath-text {
-    position: absolute;
-    font-family: 'Cinzel', serif;
-    font-size: 0.65rem;
-    letter-spacing: 0.4em;
-    color: rgba(240,238,234,0.5);
-    bottom: -2.2rem;
-    width: 100%; text-align: center;
-    transition: opacity 0.6s;
-  }
+.sub-note { font-size:0.6rem; color:rgba(240,238,234,0.18); letter-spacing:0.2em; font-style:italic; }
 
-  .med-stats {
-    display: flex; gap: 3rem; align-items: center;
-    margin-top: 3rem;
-  }
-  .stat { text-align: center; }
-  .stat-num {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(1.4rem, 4vw, 2rem);
-    font-weight: 300;
-    color: var(--gold);
-    display: block;
-    animation: countGlow 3s ease-in-out infinite;
-    transition: transform 0.3s;
-  }
-  .stat-num.bump { transform: scale(1.3); }
-  @keyframes countGlow {
-    0%,100% { text-shadow: 0 0 20px rgba(201,168,76,0.3); }
-    50% { text-shadow: 0 0 40px rgba(201,168,76,0.7); }
-  }
-  .stat-label {
-    font-size: 0.6rem; letter-spacing: 0.3em;
-    color: var(--muted); margin-top: 0.3rem; display: block;
-    font-family: 'Cinzel', serif;
-  }
-  .stat-divider {
-    width: 1px; height: 2.5rem;
-    background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.3), transparent);
-  }
+/* ════════════════════════════════
+   SETUP
+════════════════════════════════ */
+#setup-screen {
+  gap:0;
+  max-width:460px; width:100%;
+  margin:0 auto;
+  justify-content:flex-start;
+  align-items:center;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding-top:max(2.5rem, env(safe-area-inset-top, 2rem));
+  padding-bottom:max(6rem, calc(env(safe-area-inset-bottom, 0px) + 6rem));
+  scrollbar-width:none;
+}
+#setup-screen::-webkit-scrollbar { display:none; }
 
-  .connection-msg {
-    margin-top: 2rem;
-    font-style: italic;
-    color: rgba(240,238,234,0.4);
-    font-size: 0.85rem;
-    letter-spacing: 0.1em;
-    text-align: center;
-    max-width: 400px;
-    min-height: 1.5em;
-    transition: opacity 0.8s;
-  }
+.setup-title {
+  font-family:'Cinzel', serif;
+  font-size:0.75rem; letter-spacing:0.5em;
+  color:rgba(201,168,76,0.6);
+  margin-bottom:2rem; text-align:center;
+  font-weight:300;
+}
 
-  .timer-display {
-    position: absolute; top: 2rem; right: 2.5rem;
-    font-family: 'Cinzel', serif;
-    font-size: 1rem; font-weight: 300;
-    color: rgba(240,238,234,0.25);
-    letter-spacing: 0.2em;
-  }
+/* Field */
+.f-group { display:flex; flex-direction:column; gap:0.35rem; width:100%; margin-bottom:1rem; }
+.f-label { font-family:'Cinzel', serif; font-size:0.55rem; letter-spacing:0.35em; color:rgba(240,238,234,0.3); }
+.f-input { background:rgba(255,255,255,0.02); border:none; border-bottom:1px solid rgba(201,168,76,0.15); color:var(--white); font-family:'Cormorant Garamond', serif; font-size:1.05rem; padding:0.6rem 0; width:100%; outline:none; transition:border-color 0.4s; }
+.f-input:focus { border-color:rgba(201,168,76,0.5); }
+.f-input::placeholder { color:rgba(240,238,234,0.2); }
 
-  .end-btn {
-    position: absolute; bottom: 2.5rem;
-    background: none; border: none;
-    color: rgba(240,238,234,0.2);
-    font-family: 'Cinzel', serif;
-    font-size: 0.6rem;
-    letter-spacing: 0.4em;
-    cursor: none;
-    transition: color 0.5s;
-  }
-  .end-btn:hover { color: rgba(240,238,234,0.6); }
+/* Duration */
+.dur-row { display:flex; gap:0.5rem; width:100%; margin-bottom:1.25rem; }
+.d-btn { flex:1; background:none; border:1px solid rgba(201,168,76,0.1); color:rgba(240,238,234,0.3); font-family:'Cinzel', serif; font-size:0.6rem; letter-spacing:0.2em; padding:0.55rem 0; cursor:none; transition:all 0.3s; }
+.d-btn.sel { border-color:rgba(201,168,76,0.6); color:var(--gold-soft); background:rgba(201,168,76,0.05); }
 
-  /* Globe canvas behind meditation UI */
-  #globe-canvas {
-    position: absolute; inset: 0; z-index: 0;
-    opacity: 0; transition: opacity 2s ease;
-  }
-  #globe-canvas.visible { opacity: 1; }
+/* Divider */
+.sep { width:100%; height:1px; background:linear-gradient(to right,transparent,rgba(201,168,76,0.12),transparent); margin:0.75rem 0 1rem; }
 
-  /* Live peer counter badge */
-  #live-badge {
-    position: absolute; top: 2rem; left: 2.5rem;
-    display: flex; align-items: center; gap: 0.5rem;
-    font-family: 'Cinzel', serif;
-    font-size: 0.55rem; letter-spacing: 0.2em;
-    color: rgba(74,222,128,0.6);
-  }
-  .live-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--green);
-    animation: badgePulse 1.5s ease-in-out infinite;
-  }
+/* Toggle row */
+.opt-row { display:flex; align-items:center; justify-content:space-between; width:100%; padding:0.3rem 0; margin-bottom:0.5rem; }
+.opt-label { font-family:'Cinzel', serif; font-size:0.55rem; letter-spacing:0.35em; color:rgba(240,238,234,0.4); }
+.tog { position:relative; width:40px; height:22px; cursor:none; }
+.tog input { opacity:0; width:0; height:0; }
+.tog-track { position:absolute; inset:0; background:rgba(255,255,255,0.06); border:1px solid rgba(201,168,76,0.15); border-radius:22px; transition:all 0.3s; }
+.tog-thumb { position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:rgba(201,168,76,0.35); transition:all 0.3s; }
+.tog input:checked ~ .tog-track { background:rgba(201,168,76,0.12); border-color:rgba(201,168,76,0.55); }
+.tog input:checked ~ .tog-track .tog-thumb { transform:translateX(18px); background:var(--gold); }
 
-  /* ══ FINISH ══ */
-  #finish-screen { gap: 1.5rem; text-align: center; }
-  .finish-word {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(2rem, 6vw, 4rem);
-    font-weight: 300;
-    letter-spacing: 0.5em;
-    color: var(--gold);
-    animation: wordmarkPulse 4s ease-in-out infinite;
-  }
-  .finish-sub {
-    font-style: italic;
-    color: var(--muted);
-    font-size: 1.1rem;
-    line-height: 1.8;
-    max-width: 400px;
-  }
-  .finish-stats { display: flex; gap: 2rem; margin: 1rem 0; }
-  .again-btn {
-    margin-top: 1rem;
-    background: none;
-    border: 1px solid rgba(201,168,76,0.3);
-    color: var(--gold-soft);
-    font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.35em;
-    padding: 0.8rem 2.5rem;
-    cursor: none; transition: all 0.4s;
-  }
-  .again-btn:hover { border-color: var(--gold); color: var(--gold); }
+/* Breath pill row */
+.breath-panel { display:none; width:100%; flex-direction:column; gap:0.6rem; margin-bottom:0.5rem; animation:fadeIn 0.4s ease; }
+.breath-panel.open { display:flex; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+.b-row { display:flex; align-items:center; gap:0.75rem; }
+.b-label { font-family:'Cinzel', serif; font-size:0.5rem; letter-spacing:0.25em; color:rgba(240,238,234,0.3); width:72px; text-align:right; flex-shrink:0; }
+.pills { display:flex; gap:0.35rem; flex-wrap:wrap; }
+.pl { background:none; border:1px solid rgba(201,168,76,0.1); color:rgba(240,238,234,0.3); font-family:'Cinzel', serif; font-size:0.55rem; letter-spacing:0.15em; padding:0.3rem 0.55rem; cursor:none; transition:all 0.25s; }
+.pl.sel { border-color:rgba(201,168,76,0.6); color:var(--gold-soft); background:rgba(201,168,76,0.05); }
+.pattern-hint { font-family:'Cinzel', serif; font-size:0.5rem; letter-spacing:0.2em; color:rgba(201,168,76,0.35); text-align:center; padding:0.3rem 0; }
 
-  /* ══ P2P Status Bar (bottom left) ══ */
-  #peer-status {
-    position: fixed; bottom: 1.5rem; left: 2rem;
-    font-size: 0.55rem; letter-spacing: 0.25em;
-    color: rgba(240,238,234,0.18);
-    font-family: 'Cinzel', serif;
-    z-index: 20;
-    display: flex; align-items: center; gap: 0.6rem;
-  }
-  .peer-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--glow);
-    animation: peerPulse 2s ease-in-out infinite;
-  }
-  .peer-dot.live { background: var(--green); }
-  @keyframes peerPulse {
-    0%,100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.4); }
-  }
+.privacy-line { font-size:0.55rem; color:rgba(240,238,234,0.18); letter-spacing:0.15em; font-style:italic; text-align:center; margin-bottom:0.75rem; }
 
-  /* ══ Particles ══ */
-  #particles { position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
-  .particle {
-    position: absolute; border-radius: 50%;
-    background: rgba(240,238,234,0.6);
-    animation: float linear infinite;
-  }
-  @keyframes float {
-    0% { transform: translateY(100vh) translateX(0); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 0.5; }
-    100% { transform: translateY(-20px) translateX(var(--drift)); opacity: 0; }
-  }
+/* ════════════════════════════════
+   MEDITATION — The Earth-Orb
+════════════════════════════════ */
+#meditation-screen { padding:0; }
 
-  @media (max-width: 480px) {
-    .med-stats { gap: 1.5rem; }
-    .orb-container { width: 70vw; height: 70vw; }
-    .timer-display, #live-badge { font-size: 0.5rem; }
-  }
+/* The orb IS the globe — full canvas */
+#earth-canvas {
+  position:absolute; inset:0; z-index:1;
+  opacity:0; transition:opacity 3s ease;
+}
+#earth-canvas.visible { opacity:1; }
+
+/* Minimal HUD — barely there */
+.hud-top-left {
+  position:absolute; top:max(1.8rem,env(safe-area-inset-top,1.8rem)); left:2rem;
+  z-index:5; display:flex; align-items:center; gap:0.5rem;
+  font-family:'Cinzel', serif; font-size:0.5rem; letter-spacing:0.25em;
+  color:rgba(74,222,128,0.5);
+}
+.live-pip { width:4px; height:4px; border-radius:50%; background:var(--green); animation:pulse 1.8s ease-in-out infinite; }
+
+.hud-top-right {
+  position:absolute; top:max(1.8rem,env(safe-area-inset-top,1.8rem)); right:2rem;
+  z-index:5;
+  font-family:'Cinzel', serif; font-size:0.85rem; font-weight:300;
+  color:rgba(240,238,234,0.18); letter-spacing:0.2em;
+}
+
+/* Center breath guide — floating above orb */
+.breath-overlay {
+  position:absolute; z-index:6;
+  display:flex; flex-direction:column; align-items:center;
+  pointer-events:none;
+  opacity:0; transition:opacity 1s;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+}
+.breath-overlay.show { opacity:1; }
+.breath-word {
+  font-family:'Cinzel', serif; font-size:0.75rem; letter-spacing:0.55em;
+  color:rgba(240,238,234,0.55); transition:opacity 0.4s;
+  text-align:center;
+}
+
+/* Stats row at bottom */
+.med-stats {
+  position:absolute; bottom:max(5rem,calc(env(safe-area-inset-bottom,0px) + 5rem));
+  z-index:5; display:flex; gap:2.5rem; align-items:center;
+}
+.s-num { font-family:'Cinzel', serif; font-size:1.6rem; font-weight:300; color:var(--gold); display:block; animation:numGlow 4s ease-in-out infinite; transition:transform 0.3s; }
+.s-num.bump { transform:scale(1.25); }
+@keyframes numGlow { 0%,100%{text-shadow:0 0 15px rgba(201,168,76,0.25)} 50%{text-shadow:0 0 35px rgba(201,168,76,0.6)} }
+.s-lbl { font-size:0.5rem; letter-spacing:0.3em; color:rgba(240,238,234,0.3); margin-top:0.2rem; display:block; font-family:'Cinzel', serif; }
+.s-div { width:1px; height:2rem; background:linear-gradient(to bottom,transparent,rgba(201,168,76,0.2),transparent); }
+
+.field-msg {
+  position:absolute; bottom:max(3rem,calc(env(safe-area-inset-bottom,0px) + 3rem));
+  z-index:5; font-style:italic; font-size:0.8rem; letter-spacing:0.1em;
+  color:rgba(240,238,234,0.3); text-align:center; max-width:360px;
+  transition:opacity 0.9s; pointer-events:none;
+}
+
+.release-btn {
+  position:absolute; bottom:max(1.2rem,env(safe-area-inset-bottom,1.2rem));
+  z-index:5; background:none; border:none;
+  color:rgba(240,238,234,0.15); font-family:'Cinzel', serif;
+  font-size:0.5rem; letter-spacing:0.45em; cursor:none; transition:color 0.5s;
+}
+.release-btn:hover { color:rgba(240,238,234,0.5); }
+
+/* You-label floating on the globe */
+.you-tag {
+  position:absolute; z-index:6; pointer-events:none;
+  font-family:'Cinzel', serif; font-size:0.45rem; letter-spacing:0.2em;
+  color:rgba(232,213,163,0.75); white-space:nowrap;
+  text-shadow:0 0 6px rgba(201,168,76,0.7);
+  display:none; transform:translate(-50%,-100%);
+}
+
+/* ════════════════════════════════
+   FINISH
+════════════════════════════════ */
+#finish-screen { gap:1.75rem; text-align:center; }
+.finish-word { font-family:'Cinzel', serif; font-size:clamp(2.2rem,6vw,4.5rem); font-weight:300; letter-spacing:0.6em; color:var(--gold); animation:wordGlow 5s ease-in-out infinite; }
+.finish-sub { font-style:italic; color:var(--muted); font-size:1.05rem; line-height:2; max-width:380px; }
+.finish-stats { display:flex; gap:2.5rem; }
+.f-btn { background:none; font-family:'Cinzel', serif; letter-spacing:0.4em; cursor:none; transition:all 0.4s; }
+.f-btn.primary { border:1px solid rgba(201,168,76,0.3); color:var(--gold-soft); font-size:0.65rem; padding:0.8rem 2.5rem; }
+.f-btn.primary:hover { border-color:var(--gold); color:var(--gold); }
+.f-btn.ghost { border:1px solid rgba(126,184,247,0.2); color:rgba(126,184,247,0.5); font-size:0.6rem; padding:0.7rem 2rem; }
+.f-btn.ghost:hover { border-color:rgba(126,184,247,0.55); color:var(--aura); }
+
+/* ════════════════════════════════
+   GLOBAL FIXED UI
+════════════════════════════════ */
+#peer-bar {
+  position:fixed; bottom:max(1.2rem,env(safe-area-inset-bottom,1.2rem)); left:2rem;
+  z-index:20; display:flex; align-items:center; gap:0.5rem;
+  font-family:'Cinzel', serif; font-size:0.45rem; letter-spacing:0.25em;
+  color:rgba(240,238,234,0.15);
+}
+.peer-pip { width:4px; height:4px; border-radius:50%; background:rgba(74,144,217,0.6); animation:pulse 2.5s ease-in-out infinite; }
+.peer-pip.live { background:var(--green); }
+
+#share-btn {
+  position:fixed; bottom:max(1.2rem,env(safe-area-inset-bottom,1.2rem)); right:2rem;
+  z-index:20; background:none; border:1px solid rgba(201,168,76,0.12);
+  color:rgba(201,168,76,0.3); font-family:'Cinzel', serif;
+  font-size:0.45rem; letter-spacing:0.3em; padding:0.35rem 0.75rem;
+  cursor:none; transition:all 0.4s;
+}
+#share-btn:hover { border-color:rgba(201,168,76,0.45); color:rgba(201,168,76,0.7); }
+
+/* Install banner */
+#install-banner { position:fixed; bottom:0; left:0; right:0; background:rgba(5,10,26,0.97); border-top:1px solid rgba(201,168,76,0.1); padding:1rem 2rem; display:none; align-items:center; justify-content:space-between; z-index:100; gap:1rem; backdrop-filter:blur(12px); }
+#install-banner.show { display:flex; }
+.ib-text { font-size:0.7rem; color:var(--muted); letter-spacing:0.1em; line-height:1.6; font-style:italic; }
+.ib-text strong { color:var(--gold-soft); font-style:normal; font-weight:400; }
+.ib-yes { background:none; border:1px solid rgba(201,168,76,0.4); color:var(--gold-soft); font-family:'Cinzel', serif; font-size:0.55rem; letter-spacing:0.3em; padding:0.55rem 1.1rem; cursor:pointer; white-space:nowrap; transition:all 0.3s; flex-shrink:0; }
+.ib-no { background:none; border:none; color:rgba(240,238,234,0.2); font-size:0.7rem; cursor:pointer; flex-shrink:0; }
+
+/* ── Intention ── */
+.intention-block {
+  width:100%; max-width:360px;
+  border:1px solid rgba(201,168,76,0.1);
+  padding:1.2rem 1.4rem 1rem;
+  position:relative;
+  background:rgba(201,168,76,0.02);
+  margin-bottom:2.2rem;
+}
+.intention-header {
+  font-family:'Cinzel', serif;
+  font-size:0.45rem;
+  letter-spacing:0.35em;
+  color:var(--gold);
+  margin-bottom:0.5rem;
+}
+.intention-why {
+  font-style:italic;
+  font-size:0.72rem;
+  color:rgba(240,238,234,0.38);
+  letter-spacing:0.05em;
+  line-height:1.65;
+  margin-bottom:1rem;
+}
+.intention-seeds {
+  display:flex; flex-wrap:wrap; gap:0.4rem;
+  margin-bottom:0.9rem;
+}
+.seed-btn {
+  background:none;
+  border:1px solid rgba(201,168,76,0.18);
+  color:rgba(232,213,163,0.55);
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:0.78rem;
+  letter-spacing:0.08em;
+  padding:0.25rem 0.65rem;
+  cursor:none;
+  transition:all 0.35s;
+  border-radius:1px;
+}
+.seed-btn:hover, .seed-btn.chosen {
+  border-color:rgba(201,168,76,0.5);
+  color:var(--gold-soft);
+  background:rgba(201,168,76,0.06);
+}
+.intention-input {
+  width:100%;
+  background:none;
+  border:none;
+  border-bottom:1px solid rgba(201,168,76,0.15);
+  color:var(--gold-soft);
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:0.88rem;
+  letter-spacing:0.08em;
+  padding:0.4rem 0;
+  outline:none;
+  resize:none;
+  line-height:1.5;
+  transition:border-color 0.3s;
+}
+.intention-input::placeholder { color:rgba(232,213,163,0.22); }
+.intention-input:focus { border-bottom-color:rgba(201,168,76,0.4); }
+.intention-carry {
+  font-size:0.58rem;
+  color:rgba(240,238,234,0.2);
+  letter-spacing:0.12em;
+  margin-top:0.6rem;
+  font-style:italic;
+}
+
+/* ── Intention display during session ── */
+#intention-display {
+  position:absolute;
+  bottom:calc(env(safe-area-inset-bottom) + 7.5rem);
+  left:50%; transform:translateX(-50%);
+  text-align:center;
+  font-family:'Cormorant Garamond', serif;
+  font-style:italic;
+  font-size:clamp(0.8rem,2vw,1rem);
+  letter-spacing:0.18em;
+  color:rgba(232,213,163,0.28);
+  pointer-events:none;
+  white-space:nowrap;
+  opacity:0;
+  transition:opacity 2s ease;
+}
+#intention-display.visible { opacity:1; }
+#intention-display span { color:rgba(232,213,163,0.6); font-size:1.05em; }
+
 </style>
 </head>
 <body>
 
-<canvas id="cosmos-canvas"></canvas>
+<canvas id="stars-canvas"></canvas>
 <div id="vignette"></div>
 <div id="particles"></div>
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
-<!-- Bottom-left: live P2P network status -->
-<div id="peer-status">
-  <div class="peer-dot" id="peer-dot"></div>
-  <span id="peer-label">CONNECTING TO FIELD</span>
+<div id="peer-bar"><div class="peer-pip" id="peer-pip"></div><span id="peer-lbl">SEEKING THE FIELD</span></div>
+<button id="share-btn" onclick="shareApp()">SHARE ONE</button>
+
+<div id="install-banner">
+  <p class="ib-text"><strong>Add ONE to your home screen</strong><br>Available anywhere, anytime.</p>
+  <button class="ib-yes" id="ib-yes">INSTALL</button>
+  <button class="ib-no" onclick="document.getElementById('install-banner').classList.remove('show')">✕</button>
 </div>
 
 <div id="app">
 
   <!-- ══ INTRO ══ -->
   <div class="screen active" id="intro-screen">
-    <div class="wordmark">ONE</div>
-    <p class="tagline">A living field of presence.<br>No servers. No borders. Only being.</p>
-    <div id="network-badge">
-      <div class="badge-dot"></div>
-      <span id="badge-text">REACHING INTO THE MESH…</span>
+
+    <div class="intro-wordmark-wrap">
+      <div class="wordmark">ONE</div>
+      <p class="tagline">A living field of presence.<br>No servers. No borders. Only being.</p>
     </div>
-    <button class="begin-btn" onclick="showSetup()">ENTER THE FIELD</button>
-    <p class="p2p-note">peer-to-peer · device-native · no data centers · forever free</p>
+
+    <div id="mesh-badge"><div class="mesh-dot"></div><span id="mesh-txt">REACHING INTO THE MESH…</span></div>
+
+    <button class="enter-btn" onclick="showSetup()">ENTER THE FIELD</button>
+
+    <button class="why-toggle" id="why-toggle" onclick="toggleWhy()">
+      <span id="why-toggle-label">WHAT IS THIS? ↓</span>
+    </button>
+
+    <div class="why-panel" id="why-panel">
+      <div class="intro-divider"></div>
+      <div class="manifesto-block">
+
+        <p class="manifesto-lead">
+          Something shifts when people<br>choose stillness together.
+        </p>
+
+        <p class="manifesto-p">
+          If you have ever felt helpless watching the world — that feeling is real. It is honest. <strong>But it is not the full truth.</strong> Because you are here, which means some part of you already knows there is something you can do.
+        </p>
+
+        <div class="manifesto-pull">
+          Sitting in stillness with other human beings —<br>
+          even silently, even anonymously —<br>
+          is a form of action.
+        </div>
+
+        <p class="manifesto-p">
+          This is not retreat. This is not running away. <strong>Meditation directed outward — toward peace, toward empathy, toward a world that works for everyone — is one of the most radical things a person can do.</strong> It rewires you from the inside. And what changes inside a person moves outward, into every conversation, every decision, every life they touch.
+        </p>
+
+        <p class="manifesto-p">
+          Across every culture and tradition, human beings have always known that <strong>presence shared is presence multiplied.</strong> Science has begun to catch up: calm is contagious. One person carrying genuine peace into a room changes the room. A thousand people doing it changes something larger.
+        </p>
+
+        <div class="manifesto-pull">
+          You are not alone in wanting<br>
+          the world to be gentler.
+        </div>
+
+        <div class="manifesto-action">
+          <p class="manifesto-action-title">REAL PEOPLE. RIGHT NOW.</p>
+          <p class="manifesto-action-body">
+            Every point of light on this globe is a living human being — not a bot, not a simulation — who chose, in this moment, to show up. Different countries. Different languages. Different lives. All of them consciously choosing to shift something in themselves, and by doing so, in the collective.<br><br>
+            <strong>This is how the universal consciousness turns. Not through noise. Through presence. One soul at a time, together.</strong>
+          </p>
+        </div>
+
+      </div>
+      <div class="intro-divider"></div>
+    </div>
+
+    <p class="sub-note">peer-to-peer · no data centers · forever free</p>
+
   </div>
 
   <!-- ══ SETUP ══ -->
   <div class="screen" id="setup-screen">
-    <p class="screen-title">BEFORE YOU BEGIN</p>
-    <p class="screen-sub">You are about to join a living field of meditators across the Earth.<br>Your presence matters.</p>
+    <p class="setup-title">BEFORE YOU BEGIN</p>
 
-    <div class="field-group">
-      <label>YOUR NAME OR INTENTION (optional)</label>
-      <input type="text" id="user-name" placeholder="e.g. Peace, Seeker, or leave empty" maxlength="40">
+    <div class="intention-block">
+      <p class="intention-header">SET YOUR INTENTION</p>
+      <p class="intention-why">Meditation deepens when anchored to purpose. Choose a seed below — or write your own. This is what you carry into the field.</p>
+      <div class="intention-seeds">
+        <button class="seed-btn" onclick="chooseSeed(this,'Peace')">Peace</button>
+        <button class="seed-btn" onclick="chooseSeed(this,'Love')">Love</button>
+        <button class="seed-btn" onclick="chooseSeed(this,'Compassion')">Compassion</button>
+        <button class="seed-btn" onclick="chooseSeed(this,'Healing')">Healing</button>
+        <button class="seed-btn" onclick="chooseSeed(this,'Gratitude')">Gratitude</button>
+        <button class="seed-btn" onclick="chooseSeed(this,'Clarity')">Clarity</button>
+        <button class="seed-btn" onclick="chooseSeed(this,'Empathy')">Empathy</button>
+        <button class="seed-btn" onclick="chooseSeed(this,'Unity')">Unity</button>
+        <button class="seed-btn" onclick="chooseSeed(this,'Stillness')">Stillness</button>
+        <button class="seed-btn" onclick="chooseSeed(this,'Letting go')">Letting go</button>
+      </div>
+      <textarea class="intention-input" id="intention-text" rows="2"
+        placeholder="or write your own intention here…" maxlength="120"
+        oninput="clearSeeds()"></textarea>
+      <p class="intention-carry">This intention will be held silently throughout your session.</p>
     </div>
 
-    <div class="field-group" style="margin-top:0.75rem">
-      <label>SESSION DURATION</label>
-      <div class="duration-picker">
-        <button class="dur-btn selected" onclick="selectDur(this,5)">5 MIN</button>
-        <button class="dur-btn" onclick="selectDur(this,10)">10 MIN</button>
-        <button class="dur-btn" onclick="selectDur(this,20)">20 MIN</button>
-        <button class="dur-btn" onclick="selectDur(this,30)">30 MIN</button>
+    <div class="f-group">
+      <label class="f-label">DURATION</label>
+      <div class="dur-row">
+        <button class="d-btn sel" onclick="selDur(this,5)">5</button>
+        <button class="d-btn" onclick="selDur(this,10)">10</button>
+        <button class="d-btn" onclick="selDur(this,20)">20</button>
+        <button class="d-btn" onclick="selDur(this,30)">30 MIN</button>
       </div>
     </div>
 
-    <p class="location-notice" style="margin-top:0.5rem">
-      When you begin, your browser will ask to share your location.<br>
-      Only a blurred city-level position is shared. Nothing is stored permanently.
-    </p>
+    <div class="sep"></div>
 
-    <button class="begin-btn" onclick="startMeditation()" style="margin-top:1rem">BEGIN MEDITATION</button>
+    <div class="opt-row">
+      <span class="opt-label">GUIDED BREATHING</span>
+      <label class="tog"><input type="checkbox" id="breath-tog" onchange="toggleBreath()"><div class="tog-track"><div class="tog-thumb"></div></div></label>
+    </div>
+
+    <div class="breath-panel" id="breath-panel">
+      <div class="b-row">
+        <label class="b-label">INHALE</label>
+        <div class="pills" id="p-inhale">
+          <button class="pl" onclick="selPill('inhale',3,this)">3s</button>
+          <button class="pl sel" onclick="selPill('inhale',4,this)">4s</button>
+          <button class="pl" onclick="selPill('inhale',5,this)">5s</button>
+          <button class="pl" onclick="selPill('inhale',6,this)">6s</button>
+          <button class="pl" onclick="selPill('inhale',8,this)">8s</button>
+        </div>
+      </div>
+      <div class="b-row">
+        <label class="b-label">HOLD IN</label>
+        <div class="pills" id="p-holdin">
+          <button class="pl sel" onclick="selPill('holdin',4,this)">4s</button>
+          <button class="pl" onclick="selPill('holdin',5,this)">5s</button>
+          <button class="pl" onclick="selPill('holdin',6,this)">6s</button>
+          <button class="pl" onclick="selPill('holdin',7,this)">7s</button>
+          <button class="pl" onclick="selPill('holdin',0,this)">SKIP</button>
+        </div>
+      </div>
+      <div class="b-row">
+        <label class="b-label">EXHALE</label>
+        <div class="pills" id="p-exhale">
+          <button class="pl sel" onclick="selPill('exhale',4,this)">4s</button>
+          <button class="pl" onclick="selPill('exhale',6,this)">6s</button>
+          <button class="pl" onclick="selPill('exhale',8,this)">8s</button>
+        </div>
+      </div>
+      <div class="b-row">
+        <label class="b-label">HOLD OUT</label>
+        <div class="pills" id="p-holdout">
+          <button class="pl sel" onclick="selPill('holdout',4,this)">4s</button>
+          <button class="pl" onclick="selPill('holdout',5,this)">5s</button>
+          <button class="pl" onclick="selPill('holdout',6,this)">6s</button>
+          <button class="pl" onclick="selPill('holdout',0,this)">SKIP</button>
+        </div>
+      </div>
+      <div class="pattern-hint" id="pattern-hint">BOX BREATHING · 4 · 4 · 4 · 4</div>
+    </div>
+
+    <div class="opt-row" style="margin-top:0.25rem">
+      <span class="opt-label">AMBIENT SOUND</span>
+      <label class="tog"><input type="checkbox" id="sound-tog"><div class="tog-track"><div class="tog-thumb"></div></div></label>
+    </div>
+
+    <div class="sep"></div>
+    <p class="privacy-line">Location blurred to ~50km · nothing stored · no agenda</p>
+    <button class="enter-btn" onclick="startMeditation()">BEGIN</button>
   </div>
 
   <!-- ══ MEDITATION ══ -->
   <div class="screen" id="meditation-screen">
-    <canvas id="globe-canvas"></canvas>
+    <canvas id="earth-canvas"></canvas>
 
-    <div id="live-badge">
-      <div class="live-dot"></div>
-      <span id="live-count">1 soul present</span>
+    <div class="hud-top-left">
+      <div class="live-pip"></div>
+      <span id="live-lbl">1 soul</span>
     </div>
-    <div class="timer-display" id="timer-display">05:00</div>
+    <div class="hud-top-right" id="timer-lbl">05:00</div>
 
-    <div class="orb-container">
-      <div class="orb-ring"></div>
-      <div class="orb-ring"></div>
-      <div class="orb-ring"></div>
-      <div class="orb"></div>
-      <span class="breath-text" id="breath-label">BREATHE IN</span>
+    <div class="breath-overlay" id="breath-overlay">
+      <span class="breath-word" id="breath-word"></span>
     </div>
 
     <div class="med-stats">
-      <div class="stat">
-        <span class="stat-num" id="souls-count">1</span>
-        <span class="stat-label">SOULS PRESENT</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <span class="stat-num" id="countries-count">1</span>
-        <span class="stat-label">NATIONS</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <span class="stat-num" id="minutes-count">0</span>
-        <span class="stat-label">MIN SHARED</span>
-      </div>
+      <div class="stat"><span class="s-num" id="souls-n">1</span><span class="s-lbl">SOULS</span></div>
+      <div class="s-div"></div>
+      <div class="stat"><span class="s-num" id="nations-n">1</span><span class="s-lbl">NATIONS</span></div>
+      <div class="s-div"></div>
+      <div class="stat"><span class="s-num" id="mins-n">0</span><span class="s-lbl">MINUTES</span></div>
     </div>
+    <div id="intention-display"></div>
 
-    <p class="connection-msg" id="connection-msg">Reaching into the field…</p>
-    <button class="end-btn" onclick="endMeditation()">RELEASE</button>
+    <p class="field-msg" id="field-msg">Reaching into the field…</p>
+    <button class="release-btn" onclick="endMeditation()">RELEASE</button>
   </div>
 
   <!-- ══ FINISH ══ -->
@@ -554,21 +721,16 @@
     <div class="finish-word">NAMASTE</div>
     <p class="finish-sub">
       You sat in stillness with<br>
-      <strong id="final-souls" style="color:var(--gold);font-style:normal">—</strong> others across the Earth.<br>
-      The field carries your presence forward.
+      <strong id="fin-souls" style="color:var(--gold);font-style:normal">—</strong> across the Earth.<br>
+      The field carries you forward.
     </p>
     <div class="finish-stats">
-      <div class="stat">
-        <span class="stat-num" id="final-minutes">0</span>
-        <span class="stat-label">MINUTES</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <span class="stat-num" id="final-countries">1</span>
-        <span class="stat-label">NATIONS</span>
-      </div>
+      <div class="stat"><span class="s-num" id="fin-mins">0</span><span class="s-lbl">MINUTES</span></div>
+      <div class="s-div"></div>
+      <div class="stat"><span class="s-num" id="fin-nations">1</span><span class="s-lbl">NATIONS</span></div>
     </div>
-    <button class="again-btn" onclick="showIntro()">RETURN TO THE FIELD</button>
+    <button class="f-btn primary" onclick="showIntro()">RETURN TO THE FIELD</button>
+    <button class="f-btn ghost" onclick="shareApp()">SHARE ONE WITH THE WORLD</button>
   </div>
 
 </div><!-- /app -->
@@ -576,437 +738,686 @@
 <script>
 'use strict';
 
-// ══════════════════════════════════════════════════════════════════
-//
-//   ONE — Universal Meditation Network
-//   Full P2P implementation using Gun.js
-//
-//   HOW IT WORKS:
-//   1. Gun.js connects to public "relay" servers just long enough
-//      to find other browsers running this app.
-//   2. After that first handshake, all data flows directly
-//      browser-to-browser via WebRTC. No server sees your data.
-//   3. As more people use the app, they become relay nodes
-//      themselves, making it more decentralized over time.
-//   4. Location is blurred to ~50km before being shared.
-//   5. All presence data expires automatically after 2 hours.
-//
-// ══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+//  ONE  v4  —  The Earth IS the orb
+//  P2P via Gun.js · Ambient sound · Guided breathing
+// ═══════════════════════════════════════════════════
 
-
-// ─── 1. INITIALISE GUN (P2P Database) ────────────────────────────
-//
-// These are public Gun relay servers run by the Gun community.
-// They help browsers find each other. Once found, they step aside.
-// Your meditation data never "lives" on these servers.
-// As your user base grows you can remove these entirely.
-//
+// ── GUN P2P ────────────────────────────────────────
 const gun = Gun({
   peers: [
     'https://gun-manhattan.herokuapp.com/gun',
     'https://gun-us.herokuapp.com/gun',
   ],
-  localStorage: false,  // don't cache to browser storage
-  radisk: false,         // purely in-memory, nothing persisted
+  localStorage: false,
+  radisk: false,
 });
+const field = gun.get('one-meditation-v1');
+const MY_ID = 'p_' + Math.random().toString(36).slice(2,9) + '_' + Date.now();
 
-// The shared "room" all meditators write into and read from
-const FIELD_KEY = 'one-meditation-v1';
-const field = gun.get(FIELD_KEY);
-
-// Generate a unique ID for this browser session
-const MY_ID = 'peer_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now();
-
-// ─── 2. PRESENCE STATE ───────────────────────────────────────────
-let myLat = null, myLng = null;
-let userName = '';
-let sessionDuration = 5 * 60;
-let sessionTimer = null, heartbeatTimer = null;
-let secondsElapsed = 0;
-let soulsCount = 1;
+// ── STATE ───────────────────────────────────────────
+let myLat = 0, myLng = 0, userName = '';
+let userIntention = '';
+let sessDur = 5 * 60, sessTimer = null, heartTimer = null;
+let elapsed = 0, soulsCount = 1, inSession = false;
 let nationsSet = new Set(['You']);
-let msgIndex = 0;
-let breathTimeout = null;
-let isInSession = false;
+const peers = {};
 
-// Track all known peers: { peerId: { lat, lng, name, ts, nation } }
-const knownPeers = {};
+let breathOn = false, soundOn = false;
+let breathCfg = { inhale:4, holdin:4, exhale:4, holdout:4 };
+let breathIntv = null, bPhaseIdx = 0;
 
-// ─── 3. GUN CONNECTION STATUS ────────────────────────────────────
-let gunConnected = false;
-gun.on('hi', () => {
-  gunConnected = true;
-  updatePeerStatus('FIELD CONNECTED · SERVERLESS', true);
-  document.getElementById('network-badge').classList.add('connected');
-  document.getElementById('badge-text').textContent = 'MESH ACTIVE · P2P READY';
-});
-gun.on('bye', () => {
-  if (gunConnected) updatePeerStatus('RECONNECTING…', false);
-});
+let audioCtx = null, drones = [];
 
-function updatePeerStatus(text, live) {
-  document.getElementById('peer-label').textContent = text;
-  const dot = document.getElementById('peer-dot');
-  live ? dot.classList.add('live') : dot.classList.remove('live');
+// Globe
+let eCtx = null, eW = 0, eH = 0;
+let globeRot = 0, globeDots = {};
+let youTag = null;
+
+// Orb base radius (set when globe inits)
+let orbR = 0;
+
+// ── INTENTION ───────────────────────────────────────
+function chooseSeed(btn, word) {
+  document.querySelectorAll('.seed-btn').forEach(b => b.classList.remove('chosen'));
+  btn.classList.add('chosen');
+  document.getElementById('intention-text').value = word;
+}
+function clearSeeds() {
+  document.querySelectorAll('.seed-btn').forEach(b => b.classList.remove('chosen'));
+}
+function showIntention() {
+  const el = document.getElementById('intention-display');
+  if (!userIntention) { el.classList.remove('visible'); return; }
+  el.innerHTML = `holding · <span>${userIntention}</span>`;
+  // Fade in after a breath
+  setTimeout(() => el.classList.add('visible'), 3500);
 }
 
+// ── GUN STATUS ──────────────────────────────────────
+gun.on('hi', () => {
+  document.getElementById('mesh-badge').classList.add('live');
+  document.getElementById('mesh-txt').textContent = 'MESH ACTIVE · P2P READY';
+  updatePeer('FIELD CONNECTED', true);
+});
+gun.on('bye', () => updatePeer('RECONNECTING…', false));
+function updatePeer(t, live) {
+  document.getElementById('peer-lbl').textContent = t;
+  const d = document.getElementById('peer-pip');
+  live ? d.classList.add('live') : d.classList.remove('live');
+}
 
-// ─── 4. COSMOS STARFIELD CANVAS ──────────────────────────────────
-const cosmosCanvas = document.getElementById('cosmos-canvas');
-const ctx = cosmosCanvas.getContext('2d');
+// ── STARS ───────────────────────────────────────────
+const sCv = document.getElementById('stars-canvas');
+const sCtx = sCv.getContext('2d');
 let stars = [];
-
 function initStars() {
-  cosmosCanvas.width = window.innerWidth;
-  cosmosCanvas.height = window.innerHeight;
-  stars = Array.from({length: 300}, () => ({
-    x: Math.random() * cosmosCanvas.width,
-    y: Math.random() * cosmosCanvas.height,
-    r: Math.random() * 1.2,
-    a: Math.random(),
-    da: (Math.random() - 0.5) * 0.003,
-    speed: Math.random() * 0.08 + 0.02,
+  sCv.width = window.innerWidth; sCv.height = window.innerHeight;
+  stars = Array.from({length:280}, () => ({
+    x: Math.random()*sCv.width, y: Math.random()*sCv.height,
+    r: Math.random()*1.1, a: Math.random(),
+    da: (Math.random()-0.5)*0.003,
+    v: Math.random()*0.07+0.01,
   }));
 }
-
-function drawCosmos() {
-  ctx.clearRect(0, 0, cosmosCanvas.width, cosmosCanvas.height);
-  const grad = ctx.createRadialGradient(
-    cosmosCanvas.width/2, cosmosCanvas.height/2, 0,
-    cosmosCanvas.width/2, cosmosCanvas.height/2, cosmosCanvas.width * 0.8
-  );
-  grad.addColorStop(0, '#0d1b3e');
-  grad.addColorStop(0.5, '#07122b');
-  grad.addColorStop(1, '#030710');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, cosmosCanvas.width, cosmosCanvas.height);
+function drawStars() {
+  sCtx.clearRect(0,0,sCv.width,sCv.height);
+  const g = sCtx.createRadialGradient(sCv.width/2,sCv.height/2,0,sCv.width/2,sCv.height/2,sCv.width*0.85);
+  g.addColorStop(0,'#0c1833'); g.addColorStop(0.5,'#060f24'); g.addColorStop(1,'#030710');
+  sCtx.fillStyle = g; sCtx.fillRect(0,0,sCv.width,sCv.height);
   stars.forEach(s => {
-    s.a += s.da;
-    if (s.a <= 0 || s.a >= 1) s.da *= -1;
-    s.y -= s.speed;
-    if (s.y < 0) { s.y = cosmosCanvas.height; s.x = Math.random() * cosmosCanvas.width; }
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-    ctx.fillStyle = `rgba(200,215,255,${s.a * 0.85})`;
-    ctx.fill();
+    s.a += s.da; if(s.a<=0||s.a>=1) s.da *= -1;
+    s.y -= s.v; if(s.y<0){s.y=sCv.height; s.x=Math.random()*sCv.width;}
+    sCtx.beginPath(); sCtx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    sCtx.fillStyle = `rgba(200,215,255,${s.a*0.8})`; sCtx.fill();
   });
-  requestAnimationFrame(drawCosmos);
+  requestAnimationFrame(drawStars);
 }
 window.addEventListener('resize', initStars);
-initStars(); drawCosmos();
+initStars(); drawStars();
 
-
-// ─── 5. FLOATING PARTICLES ───────────────────────────────────────
-const particlesEl = document.getElementById('particles');
-for (let i = 0; i < 30; i++) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  p.style.cssText = `
-    left:${Math.random()*100}vw;
-    width:${Math.random()<0.3?2:1}px;
-    height:${Math.random()<0.3?2:1}px;
-    --drift:${(Math.random()-0.5)*80}px;
-    animation-duration:${15+Math.random()*20}s;
-    animation-delay:-${Math.random()*30}s;
-  `;
-  particlesEl.appendChild(p);
+// ── PARTICLES ───────────────────────────────────────
+const pEl = document.getElementById('particles');
+for (let i=0;i<25;i++) {
+  const p = document.createElement('div'); p.className='particle';
+  p.style.cssText=`left:${Math.random()*100}vw;width:${Math.random()<0.25?2:1}px;height:${Math.random()<0.25?2:1}px;--dx:${(Math.random()-0.5)*60}px;animation-duration:${16+Math.random()*18}s;animation-delay:-${Math.random()*28}s;`;
+  pEl.appendChild(p);
 }
 
-
-// ─── 6. CUSTOM CURSOR ────────────────────────────────────────────
-const cursor = document.getElementById('cursor');
-const cursorRing = document.getElementById('cursor-ring');
+// ── CURSOR ──────────────────────────────────────────
+const cur = document.getElementById('cursor'), curR = document.getElementById('cursor-ring');
 document.addEventListener('mousemove', e => {
-  cursor.style.left = e.clientX + 'px';
-  cursor.style.top = e.clientY + 'px';
-  setTimeout(() => {
-    cursorRing.style.left = e.clientX + 'px';
-    cursorRing.style.top = e.clientY + 'px';
-  }, 60);
+  cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px';
+  setTimeout(()=>{curR.style.left=e.clientX+'px';curR.style.top=e.clientY+'px';},55);
 });
 
+// ── NAV ─────────────────────────────────────────────
+function show(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function showIntro() { show('intro-screen'); }
+function showSetup() { show('setup-screen'); }
+function selDur(b,m) { document.querySelectorAll('.d-btn').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); sessDur=m*60; }
 
-// ─── 7. SCREEN NAVIGATION ────────────────────────────────────────
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function showIntro() { showScreen('intro-screen'); }
-function showSetup() { showScreen('setup-screen'); }
-function selectDur(btn, mins) {
-  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  sessionDuration = mins * 60;
-}
-
-
-// ─── 8. LOCATION (privacy-blurred) ───────────────────────────────
-function blurLocation(lat, lng) {
-  // Round to nearest 0.5° ≈ 50km. Hides exact position.
-  return {
-    lat: Math.round(lat * 2) / 2,
-    lng: Math.round(lng * 2) / 2,
-  };
+function toggleWhy() {
+  const panel  = document.getElementById('why-panel');
+  const label  = document.getElementById('why-toggle-label');
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  label.textContent = isOpen ? 'WHAT IS THIS? ↓' : 'CLOSE ↑';
 }
 
-function getCountryApprox(lat, lng) {
-  // Simple region labels based on coordinates
-  if (lat > 60) return 'Northern Europe/Russia';
-  if (lat > 35 && lng > -30 && lng < 60) return 'Europe/Middle East';
-  if (lat > 10 && lng > 60 && lng < 150) return 'Asia';
-  if (lat > 0 && lat < 35 && lng > -20 && lng < 60) return 'North Africa';
-  if (lat < 0 && lng > 10 && lng < 55) return 'East Africa';
-  if (lat < 0 && lng > 100) return 'Oceania';
-  if (lat > 15 && lng < -50 && lng > -130) return 'North America';
-  if (lat < 15 && lng < -35) return 'South America';
+// ── SETUP CONTROLS ──────────────────────────────────
+function toggleBreath() {
+  breathOn = document.getElementById('breath-tog').checked;
+  const p = document.getElementById('breath-panel');
+  breathOn ? p.classList.add('open') : p.classList.remove('open');
+}
+function selPill(t, v, btn) {
+  document.getElementById('p-'+t).querySelectorAll('.pl').forEach(x=>x.classList.remove('sel'));
+  btn.classList.add('sel'); breathCfg[t] = v; updateHint();
+}
+function updateHint() {
+  const {inhale,holdin,exhale,holdout} = breathCfg;
+  const parts = [inhale, holdin||'–', exhale, holdout||'–'];
+  const name = (inhale===exhale && inhale===holdin && inhale===holdout) ? 'BOX BREATHING' :
+    (!holdin && !holdout) ? '4-7-8 STYLE' : 'CUSTOM PATTERN';
+  document.getElementById('pattern-hint').textContent = name+' · '+parts.join(' · ');
+}
+
+// ── LOCATION ────────────────────────────────────────
+function blur(lat,lng){return{lat:Math.round(lat*2)/2,lng:Math.round(lng*2)/2};}
+function region(lat,lng){
+  if(lat>60) return 'Northern Europe';
+  if(lat>35&&lng>-30&&lng<60) return 'Europe';
+  if(lat>10&&lng>60&&lng<150) return 'Asia';
+  if(lat>0&&lat<35&&lng>-20&&lng<60) return 'North Africa';
+  if(lat<0&&lng>10&&lng<55) return 'East Africa';
+  if(lat<0&&lng>100) return 'Oceania';
+  if(lat>15&&lng<-50&&lng>-130) return 'North America';
+  if(lat<15&&lng<-35) return 'South America';
   return 'Earth';
 }
+function getLoc(cb){
+  navigator.geolocation
+    ? navigator.geolocation.getCurrentPosition(p=>{const b=blur(p.coords.latitude,p.coords.longitude);cb(b.lat,b.lng);},()=>cb(0,0))
+    : cb(0,0);
+}
 
-function getUserLocation(callback) {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const blurred = blurLocation(pos.coords.latitude, pos.coords.longitude);
-        callback(blurred.lat, blurred.lng);
-      },
-      () => callback(0, 0) // fallback: center of map
-    );
-  } else {
-    callback(0, 0);
+// ── GUN PRESENCE ────────────────────────────────────
+function announce(){
+  if(!inSession)return;
+  field.get(MY_ID).put({lat:myLat,lng:myLng,name:userName||'A soul',region:region(myLat,myLng),ts:Date.now(),active:true});
+}
+function withdraw(){field.get(MY_ID).put({active:false,ts:Date.now()});}
+function listenPeers(){
+  field.map().on((d,pid)=>{
+    if(!d||pid===MY_ID)return;
+    const stale=(Date.now()-(d.ts||0))>7200000, active=d.active!==false;
+    if(!active||stale){if(peers[pid]){delete peers[pid];delete globeDots[pid];refreshCounts();}return;}
+    const isNew=!peers[pid]; peers[pid]=d;
+    if(isNew&&d.lat!=null&&inSession){
+      globeDots[pid]={lat:d.lat,lng:d.lng,isSelf:false,name:d.name||'',born:Date.now()};
+      refreshCounts(); flashMsg((d.name||'A soul')+' from '+(d.region||'the field')+' joins.');
+    }
+  });
+}
+function refreshCounts(){
+  soulsCount=Object.keys(peers).length+1;
+  nationsSet=new Set(['You']); Object.values(peers).forEach(p=>{if(p.region)nationsSet.add(p.region);});
+  const el=document.getElementById('souls-n'); el.textContent=soulsCount;
+  el.classList.add('bump'); setTimeout(()=>el.classList.remove('bump'),300);
+  document.getElementById('nations-n').textContent=nationsSet.size;
+  document.getElementById('live-lbl').textContent=soulsCount+(soulsCount===1?' soul':' souls');
+}
+const ambientMsgs=['Breathe. You are held.','The Earth breathes with you.','Silence shared across oceans.','Every exhale, a gift to the field.','You are not alone. You were never alone.','The field deepens with every breath.','Let go. The field holds you.'];
+let aIdx=0;
+function flashMsg(txt){
+  const el=document.getElementById('field-msg');
+  el.style.opacity=0; setTimeout(()=>{el.textContent=txt;el.style.opacity=1;},500);
+}
+
+// ── SESSION ─────────────────────────────────────────
+function startMeditation(){
+  userName='';
+  userIntention=document.getElementById('intention-text').value.trim();
+  soundOn=document.getElementById('sound-tog').checked;
+  inSession=true; elapsed=0; soulsCount=1;
+  nationsSet=new Set(['You']); Object.keys(peers).forEach(k=>delete peers[k]);
+  globeDots={}; show('meditation-screen');
+
+  getLoc((lat,lng)=>{
+    myLat=lat; myLng=lng; announce(); listenPeers();
+    globeDots[MY_ID]={lat,lng,isSelf:true,name:userName||'YOU',born:Date.now()};
+  });
+
+  heartTimer=setInterval(announce,30000);
+  setTimeout(()=>initEarth(),600);
+  updateTimer();
+  sessTimer=setInterval(()=>{elapsed++;updateTimer();if(elapsed>=sessDur)endMeditation();},1000);
+
+  // Ambient rotation of messages
+  const aIntv=setInterval(()=>{
+    if(!inSession){clearInterval(aIntv);return;}
+    if(!Object.keys(peers).length) flashMsg(ambientMsgs[aIdx++%ambientMsgs.length]);
+  },11000);
+  flashMsg('Reaching into the field…');
+  showIntention();
+
+  if(soundOn) setTimeout(()=>startSound(),2000);
+
+  if(breathOn){
+    document.getElementById('breath-overlay').classList.add('show');
+    bPhaseIdx=0; runBreath();
   }
 }
 
+function endMeditation(){
+  inSession=false;
+  clearInterval(sessTimer); clearInterval(heartTimer);
+  if(breathRafId){ cancelAnimationFrame(breathRafId); breathRafId=null; }
+  withdraw(); stopSound();
+  eCtx=null;
+  document.getElementById('earth-canvas').classList.remove('visible');
+  document.getElementById('breath-overlay').classList.remove('show');
+  if(youTag) youTag.style.display='none';
 
-// ─── 9. GUN PRESENCE — WRITE & READ ──────────────────────────────
-
-function announcePresence() {
-  if (!isInSession) return;
-  const region = getCountryApprox(myLat, myLng);
-  field.get(MY_ID).put({
-    lat: myLat,
-    lng: myLng,
-    name: userName || 'A soul',
-    region: region,
-    ts: Date.now(),
-    active: true,
-  });
+  document.getElementById('fin-souls').textContent=(soulsCount===1?'1 soul':soulsCount+' souls');
+  document.getElementById('fin-mins').textContent=Math.floor(elapsed/60);
+  document.getElementById('fin-nations').textContent=nationsSet.size;
+  show('finish-screen');
 }
 
-function withdrawPresence() {
-  field.get(MY_ID).put({
-    active: false,
-    ts: Date.now(),
-  });
+function updateTimer(){
+  const r=Math.max(0,sessDur-elapsed);
+  document.getElementById('timer-lbl').textContent=String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0');
+  document.getElementById('mins-n').textContent=Math.floor(elapsed/60);
 }
 
-function startListeningForPeers() {
-  // Gun's .map().on() fires every time ANY peer in this "room" updates
-  field.map().on((data, peerId) => {
-    if (!data) return;
-    if (peerId === MY_ID) return; // ignore ourselves
+// ── AMBIENT SOUND — Ethereal warm light soundscape ───
+// Architecture:
+//   • Root pad:      174Hz (Solfeggio foundation — grounding warmth)
+//   • Major third:   220Hz (A — the universal tuning note, luminous)
+//   • Perfect fifth: 261Hz (C — heart of a major chord, open & uplifting)
+//   • Octave crown:  348Hz (warm upper register shimmer)
+//   • High shimmer:  528Hz (Solfeggio "transformation" — golden upper layer)
+//   • Choir formant: slowly-modulated band-passed mid tone (vowel warmth)
+//   • Celestial bell: sporadic soft sine bursts that fade like Tibetan bowls
+//   • Binaural:      theta 8Hz beat (200Hz L / 208Hz R) — open, meditative, uplifting
+//   All oscillators use sine waves shaped by LFOs for organic breathing motion.
+//   A global reverb (convolver) wraps everything in space.
 
-    const TWO_HOURS = 2 * 60 * 60 * 1000;
-    const isStale = (Date.now() - (data.ts || 0)) > TWO_HOURS;
-    const isActive = data.active !== false;
+function initAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
 
-    if (!isActive || isStale) {
-      // Remove departed soul
-      if (knownPeers[peerId]) {
-        delete knownPeers[peerId];
-        removeGlobeDot(peerId);
-        refreshCounts();
-      }
-      return;
+function makeReverb(ctx, seconds=4, decay=2) {
+  // Synthetic impulse response — creates a warm hall reverb with no file
+  const rate   = ctx.sampleRate;
+  const length = rate * seconds;
+  const buf    = ctx.createBuffer(2, length, rate);
+  for (let ch = 0; ch < 2; ch++) {
+    const data = buf.getChannelData(ch);
+    for (let i = 0; i < length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
     }
-
-    const isNew = !knownPeers[peerId];
-    knownPeers[peerId] = data;
-
-    if (isNew && data.lat != null && isInSession) {
-      addGlobeDot(peerId, data.lat, data.lng, false, data.region || 'Earth');
-      refreshCounts();
-      showArrivalMessage(data.name || 'A soul', data.region || 'the field');
-    }
-  });
+  }
+  const conv = ctx.createConvolver();
+  conv.buffer = buf;
+  return conv;
 }
 
-function refreshCounts() {
-  soulsCount = Object.keys(knownPeers).length + 1; // +1 for self
-  nationsSet = new Set(['You']);
-  Object.values(knownPeers).forEach(p => {
-    if (p.region) nationsSet.add(p.region);
-  });
-
-  const soulsEl = document.getElementById('souls-count');
-  soulsEl.textContent = soulsCount;
-  soulsEl.classList.add('bump');
-  setTimeout(() => soulsEl.classList.remove('bump'), 300);
-
-  document.getElementById('countries-count').textContent = nationsSet.size;
-  document.getElementById('live-count').textContent =
-    soulsCount + (soulsCount === 1 ? ' soul present' : ' souls present');
+function makeLFO(ctx, freq, depth, target, paramName) {
+  // Low-frequency oscillator that gently modulates a parameter
+  const lfo  = ctx.createOscillator();
+  const gain = ctx.createGain();
+  lfo.frequency.value = freq;
+  gain.gain.value = depth;
+  lfo.connect(gain);
+  gain.connect(target[paramName]);
+  lfo.start();
+  drones.push({ o: lfo, g: gain });
+  return lfo;
 }
 
-function showArrivalMessage(name, region) {
-  const msgs = [
-    `${name} from ${region} joins the field.`,
-    `A presence arrives from ${region}.`,
-    `${region} sends stillness.`,
-    `You are not alone. You were never alone.`,
-    `The field grows. ${soulsCount} souls breathing as one.`,
-    `${name} sits with you now.`,
+function startSound(){
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const ctx = audioCtx;
+  const now = ctx.currentTime;
+
+  // ── Master chain: reverb → master gain → output ──
+  const reverb  = makeReverb(ctx, 5, 2.5);
+  const reverbG = ctx.createGain();
+  reverbG.gain.value = 0.55;            // reverb wet mix
+  reverb.connect(reverbG);
+  reverbG.connect(ctx.destination);
+
+  const dry = ctx.createGain();         // dry signal path
+  dry.gain.value = 0.45;
+  dry.connect(ctx.destination);
+
+  const master = ctx.createGain();      // everything goes here
+  master.gain.setValueAtTime(0, now);
+  master.gain.linearRampToValueAtTime(0.22, now + 8);  // slow golden fade in
+  master.connect(reverb);
+  master.connect(dry);
+  drones.push({ g: master });
+
+  // Helper: create a padded sine tone with slow LFO vibrato
+  function addPad(freq, gainVal, fadeIn, vibratoRate=0.12, vibratoDepth=0.4) {
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0, now);
+    g.gain.linearRampToValueAtTime(gainVal, now + fadeIn);
+    // Gentle frequency drift — organic breathing
+    o.frequency.setValueAtTime(freq, now);
+    o.frequency.linearRampToValueAtTime(freq * 1.002, now + 30);
+    o.frequency.linearRampToValueAtTime(freq * 0.999, now + 70);
+    o.frequency.linearRampToValueAtTime(freq,         now + 110);
+    o.connect(g); g.connect(master); o.start();
+    // Subtle vibrato via LFO
+    const lfoO = ctx.createOscillator();
+    const lfoG = ctx.createGain();
+    lfoO.frequency.value = vibratoRate;
+    lfoG.gain.value = vibratoDepth;
+    lfoO.connect(lfoG); lfoG.connect(o.frequency);
+    lfoO.start();
+    drones.push({ o, g }, { o: lfoO, g: lfoG });
+  }
+
+  // ── Warm major chord pad — pure sine layers ──
+  // Tuned to A=220 natural series — feels luminous, open, hopeful
+  addPad(174,  0.18,  6,  0.08, 0.3);   // root — deep warm foundation
+  addPad(220,  0.22, 10,  0.11, 0.5);   // A — the universal A, bright
+  addPad(261,  0.20, 14,  0.09, 0.4);   // C — major third warmth
+  addPad(330,  0.16, 18,  0.13, 0.6);   // E — perfect fifth, soaring
+  addPad(348,  0.10, 22,  0.10, 0.3);   // octave of root — crown shimmer
+  addPad(440,  0.08, 26,  0.14, 0.7);   // A5 — celestial high shimmer
+  addPad(528,  0.05, 32,  0.07, 0.2);   // 528Hz Solfeggio crown — golden
+
+  // ── Choir warmth — band-passed mid tone with vowel-like resonance ──
+  const choir    = ctx.createOscillator();
+  const choirG   = ctx.createGain();
+  const choirBP  = ctx.createBiquadFilter();
+  const choirBP2 = ctx.createBiquadFilter();
+  choir.type = 'sawtooth';   // rich in harmonics for the filter to sculpt
+  choir.frequency.value = 261;
+  choirBP.type  = 'bandpass'; choirBP.frequency.value  = 800;  choirBP.Q.value  = 3;
+  choirBP2.type = 'bandpass'; choirBP2.frequency.value = 2400; choirBP2.Q.value = 5;
+  choirG.gain.setValueAtTime(0, now);
+  choirG.gain.linearRampToValueAtTime(0.045, now + 20);
+  choir.connect(choirG); choirG.connect(choirBP); choirBP.connect(master);
+  choirG.connect(choirBP2); choirBP2.connect(master);
+  choir.start();
+  drones.push({ o: choir, g: choirG });
+  // Slowly sweep the formant — vowel morphing "aah" to "ooh"
+  choirBP.frequency.setValueAtTime(800, now);
+  choirBP.frequency.linearRampToValueAtTime(400, now + 25);
+  choirBP.frequency.linearRampToValueAtTime(800, now + 55);
+  choirBP.frequency.linearRampToValueAtTime(600, now + 85);
+
+  // ── Celestial bell tones — sporadic soft pings like Tibetan bowls ──
+  // Scheduled as one-shot envelopes at irregular intervals
+  function scheduleBell(delay) {
+    if (!audioCtx || drones.length === 0) return;
+    const freqs = [528, 660, 792, 880, 1056]; // harmonic series above 528
+    const f = freqs[Math.floor(Math.random() * freqs.length)];
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.value = f;
+    g.gain.setValueAtTime(0, now + delay);
+    g.gain.linearRampToValueAtTime(0.06, now + delay + 0.08);   // fast attack
+    g.gain.exponentialRampToValueAtTime(0.001, now + delay + 6); // long ring
+    o.connect(g); g.connect(master);
+    o.start(now + delay);
+    o.stop(now + delay + 7);
+    // Schedule next bell — random 8–22 seconds apart
+    const next = 8 + Math.random() * 14;
+    setTimeout(() => scheduleBell(0), (delay + next) * 1000);
+  }
+  scheduleBell(4 + Math.random() * 6);  // first bell 4–10s in
+
+  // ── Binaural theta beat — 8Hz (200L / 208R) ──
+  // Theta = insight, creativity, emotional openness, uplifting
+  const merger = ctx.createChannelMerger(2);
+  merger.connect(master);
+  const binL = ctx.createOscillator(), binR = ctx.createOscillator();
+  const bgL  = ctx.createGain(),       bgR  = ctx.createGain();
+  binL.type = 'sine'; binL.frequency.value = 200;   // L carrier
+  binR.type = 'sine'; binR.frequency.value = 208;   // R carrier → 8Hz theta beat
+  bgL.gain.setValueAtTime(0, now); bgL.gain.linearRampToValueAtTime(0.055, now + 18);
+  bgR.gain.setValueAtTime(0, now); bgR.gain.linearRampToValueAtTime(0.055, now + 18);
+  binL.connect(bgL); binR.connect(bgR);
+  bgL.connect(merger, 0, 0); bgR.connect(merger, 0, 1);
+  binL.start(); binR.start();
+  drones.push({ o: binL, g: bgL }, { o: binR, g: bgR });
+
+  // ── Soft amplitude shimmer — the whole soundscape gently breathes ──
+  const shimmerLFO  = ctx.createOscillator();
+  const shimmerGain = ctx.createGain();
+  shimmerLFO.frequency.value = 0.07;  // one full pulse every ~14 seconds
+  shimmerGain.gain.value = 0.03;      // very subtle ±3% volume undulation
+  shimmerLFO.connect(shimmerGain);
+  shimmerGain.connect(master.gain);
+  shimmerLFO.start();
+  drones.push({ o: shimmerLFO, g: shimmerGain });
+
+  // ── Slow melodic voice — hope harmony ────────────────
+  // A pentatonic scale built on A (A C# E G# B) — bright, open, no tension.
+  // Notes are played as long sustained tones with soft attack/release,
+  // moving in a slow arc: rise toward the fifth, linger, gently descend.
+  // The melody loops every ~90 seconds so it never feels mechanical.
+  // Each note uses a sine + slight triangle blend for a warm flute-like quality.
+
+  const melodyNotes = [
+    // [freq, startDelay, duration, peakGain]  — all values in seconds
+    // First phrase — gentle ascent, like dawn light
+    { f: 220.0, t: 12,  dur: 9,  g: 0.055 },  // A3 — opening tone
+    { f: 277.2, t: 20,  dur: 8,  g: 0.048 },  // C#4 — warm lift
+    { f: 329.6, t: 27,  dur: 10, g: 0.052 },  // E4 — hope arrives
+    { f: 415.3, t: 36,  dur: 9,  g: 0.044 },  // G#4 — luminous peak
+    { f: 440.0, t: 44,  dur: 11, g: 0.058 },  // A4 — crown, held with warmth
+    // Second phrase — gentle descent, settling into peace
+    { f: 392.0, t: 54,  dur: 8,  g: 0.046 },  // G4 — soft release
+    { f: 329.6, t: 61,  dur: 9,  g: 0.050 },  // E4 — returning
+    { f: 277.2, t: 69,  dur: 8,  g: 0.044 },  // C#4 — tender close
+    { f: 246.9, t: 76,  dur: 11, g: 0.040 },  // B3 — rest, open ending
+    // Breath pause — silence lets the reverb tail breathe
+    // Third phrase — a second blooming (loops back)
+    { f: 220.0, t: 90,  dur: 9,  g: 0.050 },
+    { f: 277.2, t: 98,  dur: 8,  g: 0.046 },
+    { f: 329.6, t: 105, dur: 10, g: 0.050 },
+    { f: 440.0, t: 114, dur: 10, g: 0.055 },
+    { f: 493.9, t: 123, dur: 12, g: 0.042 },  // B4 — ethereal high note
+    { f: 440.0, t: 134, dur: 9,  g: 0.050 },
+    { f: 329.6, t: 142, dur: 8,  g: 0.046 },
+    { f: 246.9, t: 149, dur: 12, g: 0.038 },  // B3 — deep peaceful close
   ];
-  const el = document.getElementById('connection-msg');
-  el.style.opacity = 0;
-  setTimeout(() => {
-    el.textContent = msgs[Math.floor(Math.random() * msgs.length)];
-    el.style.opacity = 1;
-  }, 600);
-}
 
+  const melodyLoopDur = 163; // seconds before loop repeats
 
-// ─── 10. SESSION START / END ──────────────────────────────────────
+  function scheduleMelodyPass(offsetTime) {
+    if (!audioCtx || drones.length === 0) return;
 
-function startMeditation() {
-  userName = document.getElementById('user-name').value.trim();
-  isInSession = true;
-  secondsElapsed = 0;
-  soulsCount = 1;
-  nationsSet = new Set(['You']);
-  msgIndex = 0;
-  Object.keys(knownPeers).forEach(k => delete knownPeers[k]);
-  globeDots = {};
+    melodyNotes.forEach(note => {
+      const startAt = offsetTime + note.t;
+      if (startAt < audioCtx.currentTime) return; // skip past notes on loop
 
-  showScreen('meditation-screen');
+      // Primary tone — sine
+      const o1 = audioCtx.createOscillator();
+      const g1 = audioCtx.createGain();
+      o1.type = 'sine';
+      o1.frequency.value = note.f;
 
-  // Get location, then announce + start listening
-  getUserLocation((lat, lng) => {
-    myLat = lat; myLng = lng;
-    announcePresence();
-    startListeningForPeers();
-    if (lat !== 0 || lng !== 0) {
-      addGlobeDot(MY_ID, lat, lng, true, 'You');
-    }
-  });
+      // Blend in a quiet triangle for warmth (like a flute breath)
+      const o2 = audioCtx.createOscillator();
+      const g2 = audioCtx.createGain();
+      o2.type = 'triangle';
+      o2.frequency.value = note.f;
+      g2.gain.value = 0.25; // triangle at 25% of sine — just a breath of warmth
 
-  // Heartbeat: re-announce every 30 seconds so peers know we're still here
-  heartbeatTimer = setInterval(announcePresence, 30000);
+      // Envelope — slow attack, sustain, slow release
+      const attack  = 1.8;
+      const release = 2.2;
+      g1.gain.setValueAtTime(0, startAt);
+      g1.gain.linearRampToValueAtTime(note.g, startAt + attack);
+      g1.gain.setValueAtTime(note.g, startAt + note.dur - release);
+      g1.gain.linearRampToValueAtTime(0, startAt + note.dur);
 
-  // Globe
-  setTimeout(() => initGlobe(), 800);
+      // Subtle vibrato — starts after attack settles
+      const vib  = audioCtx.createOscillator();
+      const vibG = audioCtx.createGain();
+      vib.frequency.value = 5.2;   // 5.2Hz vibrato — natural, expressive
+      vibG.gain.setValueAtTime(0, startAt);
+      vibG.gain.linearRampToValueAtTime(0, startAt + attack + 0.5);
+      vibG.gain.linearRampToValueAtTime(note.f * 0.003, startAt + attack + 2.5); // 0.3% depth
+      vibG.gain.linearRampToValueAtTime(0, startAt + note.dur - 0.5);
+      vib.connect(vibG); vibG.connect(o1.frequency);
+      vib.start(startAt); vib.stop(startAt + note.dur + 0.1);
 
-  // Breathing guide
-  cycleBreath();
+      o2.connect(g2); g2.connect(g1);
+      o1.connect(g1); g1.connect(master);
+      o1.start(startAt); o1.stop(startAt + note.dur + 0.2);
+      o2.start(startAt); o2.stop(startAt + note.dur + 0.2);
 
-  // Countdown timer
-  updateTimerDisplay();
-  sessionTimer = setInterval(() => {
-    secondsElapsed++;
-    updateTimerDisplay();
-    if (secondsElapsed >= sessionDuration) endMeditation();
-  }, 1000);
+      // Don't push these to drones — they're self-terminating one-shots
+      // but track the gain for emergency cleanup via stopSound override
+    });
 
-  // Ambient messages cycle
-  const ambientMsgs = [
-    'Breathe. You are held.',
-    'The Earth breathes with you.',
-    'Silence shared across oceans.',
-    'Every exhale, a gift to the field.',
-    'You are not alone. You were never alone.',
-    'The field deepens with every breath.',
-    'Let go. The field holds you.',
-  ];
-  let ambientIdx = 0;
-  const ambientInterval = setInterval(() => {
-    if (!isInSession) { clearInterval(ambientInterval); return; }
-    if (Object.keys(knownPeers).length === 0) {
-      // No live peers yet — show ambient message
-      const el = document.getElementById('connection-msg');
-      el.style.opacity = 0;
+    // Schedule next loop pass
+    const nextLoop = offsetTime + melodyLoopDur;
+    const msUntilNext = (nextLoop - audioCtx.currentTime) * 1000;
+    if (msUntilNext > 0) {
       setTimeout(() => {
-        el.textContent = ambientMsgs[ambientIdx % ambientMsgs.length];
-        el.style.opacity = 1;
-        ambientIdx++;
-      }, 600);
+        if (audioCtx && drones.length > 0) scheduleMelodyPass(audioCtx.currentTime);
+      }, msUntilNext);
     }
-  }, 10000);
+  }
+
+  // Start melody after the pad has had time to bloom (8 seconds in)
+  scheduleMelodyPass(now + 8);
 }
 
-function endMeditation() {
-  isInSession = false;
-  clearInterval(sessionTimer);
-  clearInterval(heartbeatTimer);
-  clearTimeout(breathTimeout);
-  withdrawPresence();
-
-  document.getElementById('final-souls').textContent = soulsCount + (soulsCount === 1 ? ' soul' : ' souls');
-  document.getElementById('final-minutes').textContent = Math.floor(secondsElapsed / 60);
-  document.getElementById('final-countries').textContent = nationsSet.size;
-
-  showScreen('finish-screen');
+function stopSound(){
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  drones.forEach(d => {
+    if (d.g) { try { d.g.gain.cancelScheduledValues(now); d.g.gain.linearRampToValueAtTime(0, now + 3.5); } catch(e){} }
+    if (d.o) { try { d.o.stop(now + 4); } catch(e){} }
+  });
+  drones = [];
 }
 
+// ── GUIDED BREATHING — rAF easing engine ────────────
+// Uses requestAnimationFrame + easing for buttery smooth
+// ring progress and orb scale, zero setInterval jank.
 
-// ─── 11. BREATHING GUIDE ─────────────────────────────────────────
-const BREATH_PHASES = [
-  { label: 'BREATHE IN',  ms: 4000 },
-  { label: 'HOLD',        ms: 1500 },
-  { label: 'BREATHE OUT', ms: 6000 },
-  { label: 'REST',        ms: 1500 },
+const BPHASES=[
+  {key:'inhale',  label:'BREATHE IN',  dir:1,  ease:'inOut'},
+  {key:'holdin',  label:'HOLD',        dir:0,  ease:'hold' },
+  {key:'exhale',  label:'BREATHE OUT', dir:-1, ease:'inOut'},
+  {key:'holdout', label:'REST',        dir:0,  ease:'hold' },
 ];
-let breathPhaseIdx = 0;
 
-function cycleBreath() {
-  const label = document.getElementById('breath-label');
-  const phase = BREATH_PHASES[breathPhaseIdx];
-  label.style.opacity = 0;
-  setTimeout(() => {
-    label.textContent = phase.label;
-    label.style.opacity = 1;
-  }, 300);
-  breathTimeout = setTimeout(() => {
-    breathPhaseIdx = (breathPhaseIdx + 1) % BREATH_PHASES.length;
-    if (isInSession) cycleBreath();
-  }, phase.ms);
+// Easing functions
+function easeInOutSine(t){ return -(Math.cos(Math.PI*t)-1)/2; }
+function easeInOutCubic(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+
+// Live breath state — read by drawEarth for globe scale pulse
+let breathState = { phase:'idle', pct:0, dir:0 };
+
+function activePhases(){ return BPHASES.filter(p=>breathCfg[p.key]>0); }
+
+let breathRafId = null;
+
+function runBreath(){
+  if(!inSession) return;
+  const phases = activePhases();
+  if(!phases.length) return;
+  bPhaseIdx = bPhaseIdx % phases.length;
+  const ph = phases[bPhaseIdx];
+  const dur = breathCfg[ph.key] * 1000;
+
+  // Update label with crossfade
+  const wordEl = document.getElementById('breath-word');
+  wordEl.style.transition = 'opacity 0.4s';
+  wordEl.style.opacity = '0';
+  setTimeout(()=>{ wordEl.textContent = ph.label; wordEl.style.opacity = '1'; }, 420);
+
+  // Cancel previous rAF
+  if(breathRafId) cancelAnimationFrame(breathRafId);
+
+  const startTime = performance.now();
+
+  function tick(now){
+    if(!inSession) return;
+    const raw = Math.min((now - startTime) / dur, 1);
+
+    // Easing — inhale: easeInOutSine (lung-like), exhale: easeInOutCubic (natural tail)
+    let eased;
+    if(ph.ease === 'hold'){
+      eased = ph.key === 'holdin' ? 1 : 0;
+    } else if(ph.dir === 1){
+      eased = easeInOutSine(raw);
+    } else {
+      eased = easeInOutCubic(raw);
+    }
+
+    // Expose breathState — drawEarth reads this to scale the globe
+    breathState.phase = ph.key;
+    breathState.pct   = eased;
+    breathState.dir   = ph.dir;
+
+    if(raw < 1){
+      breathRafId = requestAnimationFrame(tick);
+    } else {
+      bPhaseIdx++;
+      runBreath();
+    }
+  }
+
+  breathRafId = requestAnimationFrame(tick);
 }
 
+// ── CONTINENT DATA — loaded from Natural Earth GeoJSON ──
+// Real cartographic data, fetched once at session start.
+// landPolygons is populated by loadLandData() before drawEarth runs.
+let landPolygons = [];   // array of [ [lng,lat], … ] rings
 
-// ─── 12. TIMER ────────────────────────────────────────────────────
-function updateTimerDisplay() {
-  const remaining = Math.max(0, sessionDuration - secondsElapsed);
-  const m = Math.floor(remaining / 60);
-  const s = remaining % 60;
-  document.getElementById('timer-display').textContent =
-    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-  document.getElementById('minutes-count').textContent = Math.floor(secondsElapsed / 60);
+async function loadLandData() {
+  // Natural Earth 110m land polygons — authoritative, CDN-hosted
+  // This is the standard dataset used by D3, Mapbox, etc.
+  const URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/land-110m.json';
+  try {
+    const res  = await fetch(URL);
+    const topo = await res.json();
+
+    // world-atlas uses TopoJSON.  We need to decode it without d3.
+    // TopoJSON spec: each arc is a sequence of delta-encoded [x,y]
+    // integers mapped to [lng,lat] via the quantization transform.
+    const land = topo.objects.land;
+    const arcs = topo.arcs;
+    const tf   = topo.transform;
+    const sx   = tf.scale[0], sy = tf.scale[1];
+    const tx   = tf.translate[0], ty = tf.translate[1];
+
+    // Decode a single arc index (handles negative = reversed)
+    function decodeArc(i) {
+      const reversed = i < 0;
+      const arc = arcs[reversed ? ~i : i];
+      let cx2 = 0, cy2 = 0;
+      const pts = arc.map(([dx, dy]) => {
+        cx2 += dx; cy2 += dy;
+        return [cx2 * sx + tx, cy2 * sy + ty]; // [lng, lat]
+      });
+      return reversed ? pts.reverse() : pts;
+    }
+
+    // Flatten a ring (array of arc indices) into a coordinate array
+    function decodeRing(ring) {
+      return ring.flatMap((arcIdx, i) => {
+        const pts = decodeArc(arcIdx);
+        return i === 0 ? pts : pts.slice(1); // skip duplicate junction point
+      });
+    }
+
+    // Walk geometries
+    function extractPolygons(geom) {
+      if (!geom) return;
+      if (geom.type === 'Polygon') {
+        geom.arcs.forEach(ring => landPolygons.push(decodeRing(ring)));
+      } else if (geom.type === 'MultiPolygon') {
+        geom.arcs.forEach(poly => poly.forEach(ring => landPolygons.push(decodeRing(ring))));
+      } else if (geom.type === 'GeometryCollection') {
+        geom.geometries.forEach(extractPolygons);
+      }
+    }
+    extractPolygons(land);
+
+    console.log(`ONE: loaded ${landPolygons.length} land polygons`);
+  } catch (e) {
+    console.warn('ONE: GeoJSON load failed, using fallback', e);
+    // Minimal fallback so globe isn't blank — just a few major outlines
+    landPolygons = FALLBACK_LAND;
+  }
 }
 
+// Tiny fallback — only used if fetch fails (offline after first load)
+const FALLBACK_LAND = [
+  [[-168,72],[-90,72],[-80,70],[-72,65],[-68,60],[-63,60],[-50,50],[-45,35],[-52,30],[-57,23],[-50,15],[-40,12],[-35,5],[-45,0],[-52,4],[-60,5],[-65,10],[-77,8],[-83,10],[-87,16],[-99,16],[-109,23],[-117,32],[-124,49],[-130,55],[-141,72],[-168,72]],
+  [[-80,9],[-35,5],[-35,-10],[-40,-23],[-55,-38],[-68,-54],[-65,-55],[-55,-47],[-40,-22],[-35,-8],[-60,5],[-80,9]],
+  [[-18,15],[-18,5],[-10,-10],[0,-20],[5,-25],[20,-36],[30,-30],[35,-15],[40,-5],[35,0],[40,5],[45,12],[40,22],[30,31],[25,36],[10,37],[-8,38],[-17,25],[-17,15]],
+  [[25,71],[160,70],[155,60],[150,50],[140,40],[125,25],[108,-7],[103,-3],[100,5],[105,10],[115,20],[125,25],[130,32],[140,40],[145,60],[160,70],[140,73],[60,73],[25,71]],
+  [[114,-22],[153,-28],[150,-22],[140,-17],[130,-13],[114,-22]],
+];
 
-// ─── 13. GLOBE CANVAS ────────────────────────────────────────────
-let globeCtx, globeW, globeH;
-let globeRotation = 0;
-let globeDots = {}; // { id: { lat, lng, isSelf, region, born } }
-
-function initGlobe() {
-  const gc = document.getElementById('globe-canvas');
-  gc.classList.add('visible');
-  gc.width = globeW = window.innerWidth;
-  gc.height = globeH = window.innerHeight;
-  globeCtx = gc.getContext('2d');
-  drawGlobeLoop();
-}
-
-function addGlobeDot(id, lat, lng, isSelf, region) {
-  globeDots[id] = { lat, lng, isSelf, region, born: Date.now() };
-}
-
-function removeGlobeDot(id) {
-  delete globeDots[id];
-}
-
+// ── EARTH-ORB RENDERER ──────────────────────────────
 function project(lat, lng, cx, cy, R) {
-  const phi = (90 - lat) * Math.PI / 180;
-  const theta = (lng + globeRotation) * Math.PI / 180;
+  const phi   = (90 - lat) * Math.PI / 180;
+  const theta = (-(lng) + globeRot) * Math.PI / 180;
   return {
     x: cx + R * Math.sin(phi) * Math.cos(theta),
     y: cy - R * Math.cos(phi),
@@ -1014,102 +1425,273 @@ function project(lat, lng, cx, cy, R) {
   };
 }
 
-function drawGlobeLoop() {
-  if (!globeCtx) return;
-  globeCtx.clearRect(0, 0, globeW, globeH);
+// Draw coastline polygons as stroke-only isolated segments.
+// Fill is omitted entirely — it was the source of the dark bar artifact
+// (canvas auto-closes open fill paths with a straight line).
+// Each visible run of points is drawn as its own beginPath/stroke,
+// so there is zero possibility of cross-horizon connecting lines.
+function drawSmoothedPoly(pts, cx, cy, R, fillColor, strokeColor, strokeW) {
+  if (!strokeColor || pts.length < 2) return;
 
-  const cx = globeW / 2, cy = globeH / 2;
-  const R = Math.min(globeW, globeH) * 0.37;
-  globeRotation = (globeRotation + 0.06) % 360;
+  // Project all points — use a soft visibility threshold
+  const proj = pts.map(([lng, lat]) => {
+    const p = project(lat, lng, cx, cy, R);
+    return { x: p.x, y: p.y, vis: p.z > 0.05 };
+  });
 
-  // Globe outline
-  globeCtx.beginPath();
-  globeCtx.arc(cx, cy, R, 0, Math.PI*2);
-  globeCtx.strokeStyle = 'rgba(74,144,217,0.05)';
-  globeCtx.lineWidth = 1; globeCtx.stroke();
+  // Clip to globe circle so nothing draws outside the sphere edge
+  eCtx.save();
+  eCtx.beginPath();
+  eCtx.arc(cx, cy, R - 1, 0, Math.PI * 2);
+  eCtx.clip();
 
-  // Grid lines
-  for (let lat = -60; lat <= 60; lat += 30) {
-    const pts = [];
-    for (let lng = -180; lng <= 180; lng += 4) {
-      const p = project(lat, lng, cx, cy, R);
-      if (p.z >= 0) pts.push(p);
+  eCtx.strokeStyle = strokeColor;
+  eCtx.lineWidth = strokeW || 0.6;
+  eCtx.lineJoin = 'round';
+  eCtx.lineCap = 'round';
+
+  // Walk the points, emitting a new path for each contiguous visible run.
+  // Never connect across an invisible gap — each segment is fully independent.
+  let seg = [];
+
+  const flushSeg = () => {
+    if (seg.length < 2) { seg = []; return; }
+    eCtx.beginPath();
+    eCtx.moveTo(seg[0].x, seg[0].y);
+    for (let i = 1; i < seg.length; i++) {
+      const prev = seg[i - 1];
+      const cur  = seg[i];
+      // Midpoint quadratic smoothing
+      const mx = (prev.x + cur.x) / 2;
+      const my = (prev.y + cur.y) / 2;
+      eCtx.quadraticCurveTo(prev.x, prev.y, mx, my);
     }
-    if (pts.length > 1) {
-      globeCtx.beginPath();
-      pts.forEach((p,i) => i === 0 ? globeCtx.moveTo(p.x,p.y) : globeCtx.lineTo(p.x,p.y));
-      globeCtx.strokeStyle = 'rgba(74,144,217,0.07)';
-      globeCtx.lineWidth = 0.5; globeCtx.stroke();
+    // Draw through to the actual last point
+    eCtx.lineTo(seg[seg.length - 1].x, seg[seg.length - 1].y);
+    eCtx.stroke();
+    seg = [];
+  };
+
+  for (let i = 0; i < proj.length; i++) {
+    const p = proj[i];
+    if (p.vis) {
+      seg.push(p);
+    } else {
+      flushSeg();
     }
   }
-  for (let lng = -180; lng < 180; lng += 30) {
-    const pts = [];
-    for (let lat = -85; lat <= 85; lat += 4) {
-      const p = project(lat, lng, cx, cy, R);
-      if (p.z >= 0) pts.push(p);
-    }
-    if (pts.length > 1) {
-      globeCtx.beginPath();
-      pts.forEach((p,i) => i === 0 ? globeCtx.moveTo(p.x,p.y) : globeCtx.lineTo(p.x,p.y));
-      globeCtx.strokeStyle = 'rgba(74,144,217,0.05)';
-      globeCtx.lineWidth = 0.5; globeCtx.stroke();
-    }
+  flushSeg(); // flush any trailing segment
+
+  eCtx.restore();
+}
+
+async function initEarth(){
+  const cv=document.getElementById('earth-canvas');
+  cv.classList.add('visible');
+  cv.width=eW=window.innerWidth;
+  cv.height=eH=window.innerHeight;
+  eCtx=cv.getContext('2d');
+  orbR=Math.min(eW,eH)*0.36;
+
+  // You tag
+  if(!youTag){
+    youTag=document.createElement('div');
+    youTag.className='you-tag';
+    document.getElementById('meditation-screen').appendChild(youTag);
   }
 
-  // Presence dots
-  const now = Date.now();
-  Object.values(globeDots).forEach(dot => {
-    const p = project(dot.lat, dot.lng, cx, cy, R);
-    if (p.z < -0.08) return;
+  // Load real land data if not already loaded
+  if(landPolygons.length === 0) await loadLandData();
 
-    const age = (now - dot.born) / 1000;
-    const fadeIn = Math.min(1, age / 2); // 2s fade-in
-    const depth = Math.max(0, p.z) * 0.8 + 0.2;
-    const alpha = fadeIn * depth;
+  drawEarth();
+}
 
-    const size = dot.isSelf ? 5.5 : 3;
-    const col = dot.isSelf ? `rgba(201,168,76,${alpha})` : `rgba(126,184,247,${alpha * 0.9})`;
-    const glowCol = dot.isSelf ? `rgba(201,168,76,${alpha*0.25})` : `rgba(126,184,247,${alpha*0.18})`;
+function drawEarth(){
+  if(!eCtx) return;
+  eCtx.clearRect(0,0,eW,eH);
+  const cx=eW/2, cy=eH/2;
+  globeRot=(globeRot+0.028)%360;
 
-    // Outer glow
-    const grd = globeCtx.createRadialGradient(p.x,p.y,0, p.x,p.y, size*5);
-    grd.addColorStop(0, glowCol);
-    grd.addColorStop(1, 'transparent');
-    globeCtx.beginPath();
-    globeCtx.arc(p.x, p.y, size*5, 0, Math.PI*2);
-    globeCtx.fillStyle = grd; globeCtx.fill();
+  // ── Breath-driven globe scale ──
+  // The Earth IS the breath guide — it grows on inhale, holds full,
+  // releases on exhale, rests small. Range: 0.88 (rest) → 1.12 (full inhale)
+  // — a 24% swing that's clearly visible and deeply satisfying to follow.
+  let breathScale = 1.0;
+  if (breathOn && inSession) {
+    const expand = breathState.phase === 'inhale'  ? breathState.pct :
+                   breathState.phase === 'holdin'  ? 1.0 :
+                   breathState.phase === 'exhale'  ? 1.0 - breathState.pct :
+                   0.0; // rest
+    breathScale = 0.88 + expand * 0.24; // 0.88 at rest → 1.12 at full inhale
+  } else {
+    // Idle gentle float when breathing is off
+    breathScale = 1.0 + Math.sin(performance.now() * 0.0006) * 0.012;
+  }
+  const R = orbR * breathScale;
 
-    // Dot
-    globeCtx.beginPath();
-    globeCtx.arc(p.x, p.y, size, 0, Math.PI*2);
-    globeCtx.fillStyle = col; globeCtx.fill();
+  // ── Outer atmosphere glow ──
+  for(let i=3;i>=1;i--){
+    const ag=eCtx.createRadialGradient(cx,cy,R*0.9,cx,cy,R*(1+i*0.11));
+    ag.addColorStop(0,`rgba(40,90,200,${0.055/i})`);
+    ag.addColorStop(1,'transparent');
+    eCtx.beginPath(); eCtx.arc(cx,cy,R*(1+i*0.11),0,Math.PI*2);
+    eCtx.fillStyle=ag; eCtx.fill();
+  }
 
-    // Pulse ring (self)
-    if (dot.isSelf) {
-      const t = now * 0.002;
-      const pr = size + (Math.sin(t)*0.5+0.5) * 14;
-      globeCtx.beginPath();
-      globeCtx.arc(p.x, p.y, pr, 0, Math.PI*2);
-      globeCtx.strokeStyle = `rgba(201,168,76,${alpha * 0.35 * (1 - pr/(size+14))})`;
-      globeCtx.lineWidth = 1; globeCtx.stroke();
+  // ── Ocean sphere ──
+  const oGrad=eCtx.createRadialGradient(cx-R*0.3,cy-R*0.3,0,cx,cy,R);
+  oGrad.addColorStop(0,'#0e2244');
+  oGrad.addColorStop(0.35,'#081530');
+  oGrad.addColorStop(0.72,'#050e22');
+  oGrad.addColorStop(1,'#020709');
+  eCtx.beginPath(); eCtx.arc(cx,cy,R,0,Math.PI*2);
+  eCtx.fillStyle=oGrad; eCtx.fill();
+
+  // ── Grid — barely-there ──
+  eCtx.save(); eCtx.globalAlpha=0.04;
+  for(let lat=-60;lat<=60;lat+=30){
+    const pts=[];
+    for(let lng=-180;lng<=180;lng+=2){const p=project(lat,lng,cx,cy,R);if(p.z>0)pts.push(p);}
+    if(pts.length>1){eCtx.beginPath();pts.forEach((p,i)=>i===0?eCtx.moveTo(p.x,p.y):eCtx.lineTo(p.x,p.y));eCtx.strokeStyle='#5090d0';eCtx.lineWidth=0.5;eCtx.stroke();}
+  }
+  for(let lng=-180;lng<180;lng+=30){
+    const pts=[];
+    for(let lat=-88;lat<=88;lat+=2){const p=project(lat,lng,cx,cy,R);if(p.z>0)pts.push(p);}
+    if(pts.length>1){eCtx.beginPath();pts.forEach((p,i)=>i===0?eCtx.moveTo(p.x,p.y):eCtx.lineTo(p.x,p.y));eCtx.strokeStyle='#5090d0';eCtx.lineWidth=0.5;eCtx.stroke();}
+  }
+  eCtx.restore();
+
+  // ── Continents — clean stroke-only coastlines ──
+  landPolygons.forEach(poly => {
+    drawSmoothedPoly(poly, cx, cy, R,
+      null,
+      'rgba(100,165,240,0.28)',
+      0.6
+    );
+  });
+
+  // ── Limb brightening — atmosphere edge ──
+  const limb=eCtx.createRadialGradient(cx,cy,R*0.65,cx,cy,R);
+  limb.addColorStop(0,'transparent');
+  limb.addColorStop(0.8,'transparent');
+  limb.addColorStop(0.9,'rgba(38,88,200,0.07)');
+  limb.addColorStop(1,'rgba(55,115,255,0.18)');
+  eCtx.beginPath(); eCtx.arc(cx,cy,R,0,Math.PI*2);
+  eCtx.fillStyle=limb; eCtx.fill();
+
+  // ── Specular ──
+  const spec=eCtx.createRadialGradient(cx-R*0.4,cy-R*0.4,0,cx-R*0.4,cy-R*0.4,R*0.48);
+  spec.addColorStop(0,'rgba(155,205,255,0.1)');
+  spec.addColorStop(0.6,'rgba(120,180,255,0.03)');
+  spec.addColorStop(1,'transparent');
+  eCtx.beginPath(); eCtx.arc(cx,cy,R,0,Math.PI*2);
+  eCtx.fillStyle=spec; eCtx.fill();
+
+  // ── Edge ──
+  eCtx.beginPath(); eCtx.arc(cx,cy,R,0,Math.PI*2);
+  eCtx.strokeStyle='rgba(75,135,220,0.14)'; eCtx.lineWidth=1; eCtx.stroke();
+
+  // ── Presence dots
+  const now=Date.now();
+  let selfPos=null;
+  Object.entries(globeDots).forEach(([id,dot])=>{
+    const p=project(dot.lat,dot.lng,cx,cy,R);
+    if(p.z<-0.04) return;
+    const age=(now-dot.born)/1000;
+    const fadeIn=Math.min(1,age/2.5);
+    const depth=Math.max(0,p.z)*0.6+0.4;
+    const alpha=fadeIn*depth;
+
+    if(dot.isSelf){
+      // YOU — warm gold soul, unmistakable
+      const t=now*0.0018;
+      const pr=7+Math.sin(t)*2.5;
+      // Outer corona
+      const corona=eCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,pr*5);
+      corona.addColorStop(0,`rgba(201,168,76,${alpha*0.3})`);
+      corona.addColorStop(0.5,`rgba(201,168,76,${alpha*0.08})`);
+      corona.addColorStop(1,'transparent');
+      eCtx.beginPath(); eCtx.arc(p.x,p.y,pr*5,0,Math.PI*2);
+      eCtx.fillStyle=corona; eCtx.fill();
+      // Pulse ring
+      eCtx.beginPath(); eCtx.arc(p.x,p.y,pr,0,Math.PI*2);
+      eCtx.strokeStyle=`rgba(232,213,163,${alpha*0.45})`; eCtx.lineWidth=1; eCtx.stroke();
+      // Core
+      eCtx.beginPath(); eCtx.arc(p.x,p.y,4.5,0,Math.PI*2);
+      eCtx.fillStyle=`rgba(240,225,170,${alpha})`; eCtx.fill();
+      eCtx.beginPath(); eCtx.arc(p.x,p.y,2,0,Math.PI*2);
+      eCtx.fillStyle=`rgba(255,248,220,${alpha})`; eCtx.fill();
+      selfPos={x:p.x,y:p.y};
+    } else {
+      // OTHER SOULS — soft blue-white, gently pulsing
+      const t=now*0.0012+(dot.born%8000)*0.001;
+      const pr=3.5+(Math.sin(t)*0.5+0.5)*3.5;
+      // Halo
+      const halo=eCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,pr*4);
+      halo.addColorStop(0,`rgba(126,184,247,${alpha*0.22})`);
+      halo.addColorStop(1,'transparent');
+      eCtx.beginPath(); eCtx.arc(p.x,p.y,pr*4,0,Math.PI*2); eCtx.fillStyle=halo; eCtx.fill();
+      // Ring
+      eCtx.beginPath(); eCtx.arc(p.x,p.y,pr,0,Math.PI*2);
+      eCtx.strokeStyle=`rgba(126,184,247,${alpha*0.3})`; eCtx.lineWidth=0.7; eCtx.stroke();
+      // Core
+      eCtx.beginPath(); eCtx.arc(p.x,p.y,2.8,0,Math.PI*2);
+      eCtx.fillStyle=`rgba(180,215,255,${alpha*0.9})`; eCtx.fill();
     }
   });
 
-  requestAnimationFrame(drawGlobeLoop);
+  // YOU tag
+  if(youTag&&selfPos){
+    youTag.style.display='block';
+    youTag.textContent='◆ '+(userName||'YOU');
+    youTag.style.left=selfPos.x+'px';
+    youTag.style.top=(selfPos.y-8)+'px';
+    youTag.style.transform='translate(-50%,-100%)';
+  } else if(youTag){
+    youTag.style.display='none';
+  }
+
+  requestAnimationFrame(drawEarth);
 }
 
+function addDot(id,lat,lng,self,name){globeDots[id]={lat,lng,isSelf:self,name:name||'',born:Date.now()};}
+function removeDot(id){delete globeDots[id];}
 
-// ─── 14. PWA MANIFEST (installable as an app) ────────────────────
-const manifest = {
-  name: 'ONE — Universal Meditation Network',
-  short_name: 'ONE',
-  description: 'Decentralized global meditation field. No servers. Pure presence.',
-  start_url: '.', display: 'standalone',
-  background_color: '#030710', theme_color: '#050a1a',
-  icons: [], // Add your icon here when deploying
-};
-const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
-document.getElementById('manifest-link').href = URL.createObjectURL(mBlob);
+// ── SHARE ───────────────────────────────────────────
+function shareApp(){
+  const d={
+    title:'ONE — Universal Meditation Network',
+    text:'The world needs help. Connecting to universal consciousness is the answer. ONE is completely free, collects no data, has no agenda.',
+    url:window.location.href
+  };
+  if(navigator.share){
+    navigator.share(d).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(()=>{
+      const b=document.getElementById('share-btn');
+      const o=b.textContent; b.textContent='✓ COPIED';
+      setTimeout(()=>b.textContent=o,2500);
+    }).catch(()=>prompt('Share this link:',window.location.href));
+  }
+}
+
+// Pre-fetch land data immediately so it's ready when session starts
+loadLandData();
+
+// ── PWA ─────────────────────────────────────────────
+document.getElementById('manifest-link').href=URL.createObjectURL(
+  new Blob([JSON.stringify({name:'ONE — Universal Meditation Network',short_name:'ONE',description:'The world needs help. Connecting to universal consciousness is the answer.',start_url:'.',display:'standalone',background_color:'#030710',theme_color:'#030710',icons:[]})],{type:'application/json'})
+);
+let dInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); dInstall=e;
+  setTimeout(()=>{if(document.getElementById('intro-screen').classList.contains('active'))document.getElementById('install-banner').classList.add('show');},12000);
+});
+document.getElementById('ib-yes').addEventListener('click',async()=>{
+  if(!dInstall)return;
+  dInstall.prompt(); await dInstall.userChoice; dInstall=null;
+  document.getElementById('install-banner').classList.remove('show');
+});
 
 </script>
 </body>
