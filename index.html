@@ -349,6 +349,7 @@ html, body {
   position:absolute; bottom:max(5rem,calc(env(safe-area-inset-bottom,0px) + 5rem));
   z-index:5; display:flex; gap:2.5rem; align-items:center;
 }
+.stat { display:flex; flex-direction:column; align-items:center; text-align:center; }
 .s-num { font-family:'Cinzel', serif; font-size:1.6rem; font-weight:300; color:var(--gold); display:block; animation:numGlow 4s ease-in-out infinite; transition:transform 0.3s; }
 .s-num.bump { transform:scale(1.25); }
 @keyframes numGlow { 0%,100%{text-shadow:0 0 15px rgba(201,168,76,0.25)} 50%{text-shadow:0 0 35px rgba(201,168,76,0.6)} }
@@ -558,13 +559,14 @@ html, body {
         </p>
 
         <p class="manifesto-p">
-          If you have ever felt helpless watching the world — that feeling is real. It is honest. <strong>But it is not the full truth.</strong> Because you are here, which means some part of you already knows there is something you can do.
+          If you have ever felt helpless watching what is happening in the world — that feeling is real. It is honest. And it is shared by millions. <strong>But it is not the full truth.</strong> The fact that you are here means there is a part of you that already knows something deeper — a part that knows you are not powerless. Even alone, you carry within you the ability to create change. We all do. And when we come together in that knowing, our capacity to shift something real in this world is magnified beyond what any of us can fully see.
         </p>
 
         <div class="manifesto-pull">
           Sitting in stillness with other human beings —<br>
           even silently, even anonymously —<br>
-          is a form of action.
+          is a form of action.<br>
+          <em>Action through connection.</em>
         </div>
 
         <p class="manifesto-p">
@@ -584,7 +586,7 @@ html, body {
           <p class="manifesto-action-title">REAL PEOPLE. RIGHT NOW.</p>
           <p class="manifesto-action-body">
             Every point of light on this globe is a living human being — not a bot, not a simulation — who chose, in this moment, to show up. Different countries. Different languages. Different lives. All of them consciously choosing to shift something in themselves, and by doing so, in the collective.<br><br>
-            <strong>This is how the universal consciousness turns. Not through noise. Through presence. One soul at a time, together.</strong>
+            <strong>This is how the world turns. Through presence. One soul at a time, together.</strong>
           </p>
         </div>
 
@@ -992,33 +994,33 @@ function updateTimer(){
   document.getElementById('mins-n').textContent=Math.floor(elapsed/60);
 }
 
-// ── AMBIENT SOUND — Ethereal warm light soundscape ───
+// ── AMBIENT SOUND — Warm Light & Love soundscape ───
 // Architecture:
-//   • Root pad:      174Hz (Solfeggio foundation — grounding warmth)
-//   • Major third:   220Hz (A — the universal tuning note, luminous)
-//   • Perfect fifth: 261Hz (C — heart of a major chord, open & uplifting)
-//   • Octave crown:  348Hz (warm upper register shimmer)
-//   • High shimmer:  528Hz (Solfeggio "transformation" — golden upper layer)
-//   • Choir formant: slowly-modulated band-passed mid tone (vowel warmth)
-//   • Celestial bell: sporadic soft sine bursts that fade like Tibetan bowls
-//   • Binaural:      theta 8Hz beat (200Hz L / 208Hz R) — open, meditative, uplifting
-//   All oscillators use sine waves shaped by LFOs for organic breathing motion.
-//   A global reverb (convolver) wraps everything in space.
+//   • Root pad:      256Hz (C — heart center, warm and grounding)
+//   • Major third:   320Hz (E — the emotional brightness of a major chord)
+//   • Perfect fifth: 384Hz (G — open, soaring, peaceful)
+//   • Upper octave:  512Hz (C5 — gentle shimmer, like morning light)
+//   • Warm sub:      128Hz (C3 — felt more than heard, grounding body)
+//   • Soft choir:    sine-based formant (no sawtooth — pure vowel warmth)
+//   • Tibetan bell:  harmonics of 256Hz — pure, ringing, sacred
+//   • Binaural:      alpha 10Hz beat (240Hz L / 250Hz R) — calm, loving, open-hearted
+//   • Melody:        C major pentatonic, slow and tender — feels like hope
 
 function initAudio(){
   if(audioCtx) return;
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 }
 
-function makeReverb(ctx, seconds=4, decay=2) {
-  // Synthetic impulse response — creates a warm hall reverb with no file
+function makeReverb(ctx, seconds=5, decay=2.2) {
+  // Longer, warmer reverb — like a stone chapel, not a sci-fi void
   const rate   = ctx.sampleRate;
   const length = rate * seconds;
   const buf    = ctx.createBuffer(2, length, rate);
   for (let ch = 0; ch < 2; ch++) {
     const data = buf.getChannelData(ch);
     for (let i = 0; i < length; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+      // Slightly filtered impulse — softens harsh transients
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay) * 0.85;
     }
   }
   const conv = ctx.createConvolver();
@@ -1027,7 +1029,6 @@ function makeReverb(ctx, seconds=4, decay=2) {
 }
 
 function makeLFO(ctx, freq, depth, target, paramName) {
-  // Low-frequency oscillator that gently modulates a parameter
   const lfo  = ctx.createOscillator();
   const gain = ctx.createGain();
   lfo.frequency.value = freq;
@@ -1046,38 +1047,37 @@ function startSound(){
   const now = ctx.currentTime;
 
   // ── Master chain: reverb → master gain → output ──
-  const reverb  = makeReverb(ctx, 5, 2.5);
+  const reverb  = makeReverb(ctx, 5, 2.2);
   const reverbG = ctx.createGain();
-  reverbG.gain.value = 0.55;            // reverb wet mix
+  reverbG.gain.value = 0.5;
   reverb.connect(reverbG);
   reverbG.connect(ctx.destination);
 
-  const dry = ctx.createGain();         // dry signal path
-  dry.gain.value = 0.45;
+  const dry = ctx.createGain();
+  dry.gain.value = 0.5;
   dry.connect(ctx.destination);
 
-  const master = ctx.createGain();      // everything goes here
+  const master = ctx.createGain();
   master.gain.setValueAtTime(0, now);
-  master.gain.linearRampToValueAtTime(0.22, now + 8);  // slow golden fade in
+  master.gain.linearRampToValueAtTime(0.30, now + 10);  // warm, present, full
   master.connect(reverb);
   master.connect(dry);
   drones.push({ g: master });
 
-  // Helper: create a padded sine tone with slow LFO vibrato
-  function addPad(freq, gainVal, fadeIn, vibratoRate=0.12, vibratoDepth=0.4) {
+  // Helper: sine pad with gentle vibrato — pure, warm, no harshness
+  function addPad(freq, gainVal, fadeIn, vibratoRate=0.10, vibratoDepth=0.3) {
     const o = ctx.createOscillator();
     const g = ctx.createGain();
     o.type = 'sine';
     o.frequency.value = freq;
     g.gain.setValueAtTime(0, now);
     g.gain.linearRampToValueAtTime(gainVal, now + fadeIn);
-    // Gentle frequency drift — organic breathing
+    // Very gentle organic drift
     o.frequency.setValueAtTime(freq, now);
-    o.frequency.linearRampToValueAtTime(freq * 1.002, now + 30);
-    o.frequency.linearRampToValueAtTime(freq * 0.999, now + 70);
-    o.frequency.linearRampToValueAtTime(freq,         now + 110);
+    o.frequency.linearRampToValueAtTime(freq * 1.0015, now + 40);
+    o.frequency.linearRampToValueAtTime(freq * 0.9992, now + 90);
+    o.frequency.linearRampToValueAtTime(freq,          now + 130);
     o.connect(g); g.connect(master); o.start();
-    // Subtle vibrato via LFO
     const lfoO = ctx.createOscillator();
     const lfoG = ctx.createGain();
     lfoO.frequency.value = vibratoRate;
@@ -1087,114 +1087,113 @@ function startSound(){
     drones.push({ o, g }, { o: lfoO, g: lfoG });
   }
 
-  // ── Warm major chord pad — pure sine layers ──
-  // Tuned to A=220 natural series — feels luminous, open, hopeful
-  addPad(174,  0.18,  6,  0.08, 0.3);   // root — deep warm foundation
-  addPad(220,  0.22, 10,  0.11, 0.5);   // A — the universal A, bright
-  addPad(261,  0.20, 14,  0.09, 0.4);   // C — major third warmth
-  addPad(330,  0.16, 18,  0.13, 0.6);   // E — perfect fifth, soaring
-  addPad(348,  0.10, 22,  0.10, 0.3);   // octave of root — crown shimmer
-  addPad(440,  0.08, 26,  0.14, 0.7);   // A5 — celestial high shimmer
-  addPad(528,  0.05, 32,  0.07, 0.2);   // 528Hz Solfeggio crown — golden
+  // ── Pure C major chord — warm, loving, open ──
+  // C major is the most emotionally open, universally hopeful chord in Western music.
+  // All sine waves — no sawtooth, no harshness.
+  addPad(128,  0.14,  8,  0.06, 0.2);   // C2 sub — felt warmth in the body
+  addPad(256,  0.22, 10,  0.08, 0.3);   // C3 root — warm center
+  addPad(320,  0.20, 14,  0.10, 0.4);   // E3 — emotional brightness, major third
+  addPad(384,  0.18, 18,  0.09, 0.35);  // G3 — perfect fifth, open and soaring
+  addPad(512,  0.10, 24,  0.07, 0.2);   // C4 — gentle octave shimmer
+  addPad(640,  0.06, 30,  0.11, 0.4);   // E4 — high warmth, like a singing bowl
+  addPad(768,  0.04, 36,  0.08, 0.25);  // G4 — soft celestial upper layer
 
-  // ── Choir warmth — band-passed mid tone with vowel-like resonance ──
-  const choir    = ctx.createOscillator();
-  const choirG   = ctx.createGain();
-  const choirBP  = ctx.createBiquadFilter();
-  const choirBP2 = ctx.createBiquadFilter();
-  choir.type = 'sawtooth';   // rich in harmonics for the filter to sculpt
-  choir.frequency.value = 261;
-  choirBP.type  = 'bandpass'; choirBP.frequency.value  = 800;  choirBP.Q.value  = 3;
-  choirBP2.type = 'bandpass'; choirBP2.frequency.value = 2400; choirBP2.Q.value = 5;
-  choirG.gain.setValueAtTime(0, now);
-  choirG.gain.linearRampToValueAtTime(0.045, now + 20);
-  choir.connect(choirG); choirG.connect(choirBP); choirBP.connect(master);
-  choirG.connect(choirBP2); choirBP2.connect(master);
-  choir.start();
-  drones.push({ o: choir, g: choirG });
-  // Slowly sweep the formant — vowel morphing "aah" to "ooh"
-  choirBP.frequency.setValueAtTime(800, now);
-  choirBP.frequency.linearRampToValueAtTime(400, now + 25);
-  choirBP.frequency.linearRampToValueAtTime(800, now + 55);
-  choirBP.frequency.linearRampToValueAtTime(600, now + 85);
+  // ── Soft sine choir — pure vowel warmth, no sawtooth harshness ──
+  // Two layered sines through a gentle lowpass — sounds like a humming throat
+  const choirFreqs = [256, 320];
+  choirFreqs.forEach((freq, idx) => {
+    const o  = ctx.createOscillator();
+    const g  = ctx.createGain();
+    const lp = ctx.createBiquadFilter();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    lp.type = 'lowpass';
+    lp.frequency.value = 900;   // only let warm lows through
+    lp.Q.value = 0.8;
+    g.gain.setValueAtTime(0, now);
+    g.gain.linearRampToValueAtTime(0.035, now + 22 + idx * 6);
+    o.connect(g); g.connect(lp); lp.connect(master);
+    o.start();
+    drones.push({ o, g });
+    // Slow gentle frequency sway
+    o.frequency.setValueAtTime(freq, now);
+    o.frequency.linearRampToValueAtTime(freq * 1.003, now + 35);
+    o.frequency.linearRampToValueAtTime(freq * 0.998, now + 70);
+    o.frequency.linearRampToValueAtTime(freq,         now + 105);
+  });
 
-  // ── Celestial bell tones — sporadic soft pings like Tibetan bowls ──
-  // Scheduled as one-shot envelopes at irregular intervals
+  // ── Tibetan singing bowl bells — pure sine, deeply warm ──
   function scheduleBell(delay) {
     if (!audioCtx || drones.length === 0) return;
-    const freqs = [528, 660, 792, 880, 1056]; // harmonic series above 528
+    // Harmonics of 256 (C) — all warm, consonant, no tension
+    const freqs = [256, 384, 512, 640, 768, 1024];
     const f = freqs[Math.floor(Math.random() * freqs.length)];
     const o = ctx.createOscillator();
     const g = ctx.createGain();
     o.type = 'sine';
     o.frequency.value = f;
     g.gain.setValueAtTime(0, now + delay);
-    g.gain.linearRampToValueAtTime(0.06, now + delay + 0.08);   // fast attack
-    g.gain.exponentialRampToValueAtTime(0.001, now + delay + 6); // long ring
+    g.gain.linearRampToValueAtTime(0.055, now + delay + 0.05);  // gentle attack
+    g.gain.exponentialRampToValueAtTime(0.001, now + delay + 8); // long warm ring
     o.connect(g); g.connect(master);
     o.start(now + delay);
-    o.stop(now + delay + 7);
-    // Schedule next bell — random 8–22 seconds apart
-    const next = 8 + Math.random() * 14;
+    o.stop(now + delay + 9);
+    const next = 10 + Math.random() * 16;
     setTimeout(() => scheduleBell(0), (delay + next) * 1000);
   }
-  scheduleBell(4 + Math.random() * 6);  // first bell 4–10s in
+  scheduleBell(5 + Math.random() * 5);
 
-  // ── Binaural theta beat — 8Hz (200L / 208R) ──
-  // Theta = insight, creativity, emotional openness, uplifting
+  // ── Binaural alpha beat — 10Hz (240Hz L / 250Hz R) ──
+  // Alpha = calm awareness, loving presence, open heart — warm, not edgy
   const merger = ctx.createChannelMerger(2);
   merger.connect(master);
   const binL = ctx.createOscillator(), binR = ctx.createOscillator();
   const bgL  = ctx.createGain(),       bgR  = ctx.createGain();
-  binL.type = 'sine'; binL.frequency.value = 200;   // L carrier
-  binR.type = 'sine'; binR.frequency.value = 208;   // R carrier → 8Hz theta beat
-  bgL.gain.setValueAtTime(0, now); bgL.gain.linearRampToValueAtTime(0.055, now + 18);
-  bgR.gain.setValueAtTime(0, now); bgR.gain.linearRampToValueAtTime(0.055, now + 18);
+  binL.type = 'sine'; binL.frequency.value = 240;
+  binR.type = 'sine'; binR.frequency.value = 250;   // 10Hz alpha beat
+  bgL.gain.setValueAtTime(0, now); bgL.gain.linearRampToValueAtTime(0.045, now + 20);
+  bgR.gain.setValueAtTime(0, now); bgR.gain.linearRampToValueAtTime(0.045, now + 20);
   binL.connect(bgL); binR.connect(bgR);
   bgL.connect(merger, 0, 0); bgR.connect(merger, 0, 1);
   binL.start(); binR.start();
   drones.push({ o: binL, g: bgL }, { o: binR, g: bgR });
 
-  // ── Soft amplitude shimmer — the whole soundscape gently breathes ──
+  // ── Soft amplitude shimmer — the soundscape breathes gently ──
   const shimmerLFO  = ctx.createOscillator();
   const shimmerGain = ctx.createGain();
-  shimmerLFO.frequency.value = 0.07;  // one full pulse every ~14 seconds
-  shimmerGain.gain.value = 0.03;      // very subtle ±3% volume undulation
+  shimmerLFO.frequency.value = 0.05;   // one slow pulse every ~20 seconds
+  shimmerGain.gain.value = 0.025;
   shimmerLFO.connect(shimmerGain);
   shimmerGain.connect(master.gain);
   shimmerLFO.start();
   drones.push({ o: shimmerLFO, g: shimmerGain });
 
-  // ── Slow melodic voice — hope harmony ────────────────
-  // A pentatonic scale built on A (A C# E G# B) — bright, open, no tension.
-  // Notes are played as long sustained tones with soft attack/release,
-  // moving in a slow arc: rise toward the fifth, linger, gently descend.
-  // The melody loops every ~90 seconds so it never feels mechanical.
-  // Each note uses a sine + slight triangle blend for a warm flute-like quality.
+  // ── Melody — slow tender C major pentatonic ──
+  // C D E G A — the most universally warm, hopeful scale.
+  // Each note is long, soft, and given space to breathe.
+  // Feels like sunlight moving through a window — gentle and full of hope.
 
   const melodyNotes = [
-    // [freq, startDelay, duration, peakGain]  — all values in seconds
-    // First phrase — gentle ascent, like dawn light
-    { f: 220.0, t: 12,  dur: 9,  g: 0.055 },  // A3 — opening tone
-    { f: 277.2, t: 20,  dur: 8,  g: 0.048 },  // C#4 — warm lift
-    { f: 329.6, t: 27,  dur: 10, g: 0.052 },  // E4 — hope arrives
-    { f: 415.3, t: 36,  dur: 9,  g: 0.044 },  // G#4 — luminous peak
-    { f: 440.0, t: 44,  dur: 11, g: 0.058 },  // A4 — crown, held with warmth
-    // Second phrase — gentle descent, settling into peace
-    { f: 392.0, t: 54,  dur: 8,  g: 0.046 },  // G4 — soft release
-    { f: 329.6, t: 61,  dur: 9,  g: 0.050 },  // E4 — returning
-    { f: 277.2, t: 69,  dur: 8,  g: 0.044 },  // C#4 — tender close
-    { f: 246.9, t: 76,  dur: 11, g: 0.040 },  // B3 — rest, open ending
-    // Breath pause — silence lets the reverb tail breathe
-    // Third phrase — a second blooming (loops back)
-    { f: 220.0, t: 90,  dur: 9,  g: 0.050 },
-    { f: 277.2, t: 98,  dur: 8,  g: 0.046 },
-    { f: 329.6, t: 105, dur: 10, g: 0.050 },
-    { f: 440.0, t: 114, dur: 10, g: 0.055 },
-    { f: 493.9, t: 123, dur: 12, g: 0.042 },  // B4 — ethereal high note
-    { f: 440.0, t: 134, dur: 9,  g: 0.050 },
-    { f: 329.6, t: 142, dur: 8,  g: 0.046 },
-    { f: 246.9, t: 149, dur: 12, g: 0.038 },  // B3 — deep peaceful close
+    // [freq, startDelay, duration, peakGain]
+    // First phrase — gentle opening, like waking softly
+    { f: 256.0, t: 10,  dur: 9,  g: 0.068 },  // C4 — opening warmth
+    { f: 288.0, t: 18,  dur: 8,  g: 0.062 },  // D4 — tender step forward
+    { f: 320.0, t: 25,  dur: 10, g: 0.070 },  // E4 — hope brightens
+    { f: 384.0, t: 34,  dur: 9,  g: 0.065 },  // G4 — open, soaring
+    { f: 426.7, t: 42,  dur: 12, g: 0.075 },  // A4 — love, held with warmth
+    // Second phrase — tender descent, settling into peace
+    { f: 384.0, t: 53,  dur: 8,  g: 0.062 },  // G4 — soft release
+    { f: 320.0, t: 60,  dur: 9,  g: 0.068 },  // E4 — returning home
+    { f: 288.0, t: 68,  dur: 8,  g: 0.060 },  // D4 — gentle close
+    { f: 256.0, t: 75,  dur: 13, g: 0.058 },  // C4 — rest, full and peaceful
+    // Third phrase — second blooming, slightly higher
+    { f: 320.0, t: 92,  dur: 9,  g: 0.065 },
+    { f: 384.0, t: 100, dur: 8,  g: 0.068 },
+    { f: 426.7, t: 107, dur: 10, g: 0.072 },
+    { f: 512.0, t: 116, dur: 11, g: 0.060 },  // C5 — luminous peak
+    { f: 426.7, t: 126, dur: 9,  g: 0.065 },  // A4 — warm return
+    { f: 384.0, t: 134, dur: 8,  g: 0.062 },
+    { f: 256.0, t: 141, dur: 14, g: 0.055 },  // C4 — deep peaceful close
   ];
 
   const melodyLoopDur = 163; // seconds before loop repeats
@@ -1623,20 +1622,24 @@ function drawEarth(){
       eCtx.fillStyle=`rgba(255,248,220,${alpha})`; eCtx.fill();
       selfPos={x:p.x,y:p.y};
     } else {
-      // OTHER SOULS — soft blue-white, gently pulsing
+      // OTHER SOULS — pure white light, soft and clean
       const t=now*0.0012+(dot.born%8000)*0.001;
       const pr=3.5+(Math.sin(t)*0.5+0.5)*3.5;
-      // Halo
+      // Soft white halo
       const halo=eCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,pr*4);
-      halo.addColorStop(0,`rgba(126,184,247,${alpha*0.22})`);
+      halo.addColorStop(0,`rgba(220,235,255,${alpha*0.25})`);
+      halo.addColorStop(0.5,`rgba(200,220,255,${alpha*0.08})`);
       halo.addColorStop(1,'transparent');
       eCtx.beginPath(); eCtx.arc(p.x,p.y,pr*4,0,Math.PI*2); eCtx.fillStyle=halo; eCtx.fill();
-      // Ring
+      // Crisp white ring
       eCtx.beginPath(); eCtx.arc(p.x,p.y,pr,0,Math.PI*2);
-      eCtx.strokeStyle=`rgba(126,184,247,${alpha*0.3})`; eCtx.lineWidth=0.7; eCtx.stroke();
-      // Core
-      eCtx.beginPath(); eCtx.arc(p.x,p.y,2.8,0,Math.PI*2);
-      eCtx.fillStyle=`rgba(180,215,255,${alpha*0.9})`; eCtx.fill();
+      eCtx.strokeStyle=`rgba(220,235,255,${alpha*0.35})`; eCtx.lineWidth=0.6; eCtx.stroke();
+      // Pure white core
+      eCtx.beginPath(); eCtx.arc(p.x,p.y,2.5,0,Math.PI*2);
+      eCtx.fillStyle=`rgba(245,250,255,${alpha})`; eCtx.fill();
+      // Bright center pinpoint
+      eCtx.beginPath(); eCtx.arc(p.x,p.y,1,0,Math.PI*2);
+      eCtx.fillStyle=`rgba(255,255,255,${alpha})`; eCtx.fill();
     }
   });
 
