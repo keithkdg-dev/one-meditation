@@ -1602,24 +1602,24 @@ function drawEarth(){
     const alpha=fadeIn*depth;
 
     if(dot.isSelf){
-      // YOU — warm gold soul, unmistakable
+      // YOU — bright white-blue soul, slightly larger to stay identifiable
       const t=now*0.0018;
       const pr=7+Math.sin(t)*2.5;
-      // Outer corona
+      // Outer corona — soft white-blue
       const corona=eCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,pr*5);
-      corona.addColorStop(0,`rgba(201,168,76,${alpha*0.3})`);
-      corona.addColorStop(0.5,`rgba(201,168,76,${alpha*0.08})`);
+      corona.addColorStop(0,`rgba(200,225,255,${alpha*0.35})`);
+      corona.addColorStop(0.5,`rgba(180,210,255,${alpha*0.10})`);
       corona.addColorStop(1,'transparent');
       eCtx.beginPath(); eCtx.arc(p.x,p.y,pr*5,0,Math.PI*2);
       eCtx.fillStyle=corona; eCtx.fill();
-      // Pulse ring
+      // Pulse ring — crisp white
       eCtx.beginPath(); eCtx.arc(p.x,p.y,pr,0,Math.PI*2);
-      eCtx.strokeStyle=`rgba(232,213,163,${alpha*0.45})`; eCtx.lineWidth=1; eCtx.stroke();
-      // Core
+      eCtx.strokeStyle=`rgba(220,238,255,${alpha*0.55})`; eCtx.lineWidth=1.2; eCtx.stroke();
+      // Core — bright white with blue tint
       eCtx.beginPath(); eCtx.arc(p.x,p.y,4.5,0,Math.PI*2);
-      eCtx.fillStyle=`rgba(240,225,170,${alpha})`; eCtx.fill();
+      eCtx.fillStyle=`rgba(230,243,255,${alpha})`; eCtx.fill();
       eCtx.beginPath(); eCtx.arc(p.x,p.y,2,0,Math.PI*2);
-      eCtx.fillStyle=`rgba(255,248,220,${alpha})`; eCtx.fill();
+      eCtx.fillStyle=`rgba(255,255,255,${alpha})`; eCtx.fill();
       selfPos={x:p.x,y:p.y};
     } else {
       // OTHER SOULS — pure white light, soft and clean
