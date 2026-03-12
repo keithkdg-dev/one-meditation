@@ -559,7 +559,7 @@ html, body {
         </p>
 
         <p class="manifesto-p">
-          If you have ever felt helpless watching what is happening in the world — that feeling is real. It is honest. And it is shared by millions. <strong>But it is not the full truth.</strong> The fact that you are here means there is a part of you that already knows something deeper — a part that knows you are not powerless. Even alone, you carry within you the ability to create change. We all do. And when we come together in that knowing, our capacity to shift something real in this world is magnified beyond what any of us can fully see.
+          If you have ever felt helpless watching what is happening in the world — that feeling is real. And it is shared by millions. <strong>But it is not the full truth.</strong> The fact that you are here means there is a part of you that already knows something deeper — a part that knows you are not powerless. Even alone, you carry within you the ability to create change. We all do. And when we come together in that knowing, our capacity to shift something real in this world is magnified beyond what any of us can fully see.
         </p>
 
         <div class="manifesto-pull">
@@ -1505,6 +1505,38 @@ async function initEarth(){
   drawEarth();
 }
 
+// ── MICHIGAN — home state, traced along Great Lakes shorelines ──
+// Lower Peninsula: Lake Michigan shore (W), Lake Erie/Huron shore (E)
+// Upper Peninsula: Lake Superior (N), Lake Michigan/Huron (S), Keweenaw Peninsula
+const MICHIGAN_LOWER = [
+  [-86.823, 41.76], [-86.1, 41.76], [-85.19, 41.76], [-84.806, 41.76],
+  [-84.36, 41.902], [-83.916, 41.976], [-83.454, 41.976], [-83.143, 42.081],
+  [-82.905, 42.354], [-82.651, 42.553], [-82.508, 42.62], [-82.461, 42.773],
+  [-82.473, 43.002], [-82.413, 43.224], [-82.138, 43.566], [-82.004, 43.793],
+  [-82.523, 44.058], [-83.317, 44.333], [-83.58, 44.333], [-83.89, 44.716],
+  [-83.97, 45.083], [-84.119, 45.49], [-84.37, 45.78], [-84.7, 45.78],
+  [-85.32, 45.77], [-85.55, 45.68], [-85.573, 45.357], [-85.492, 45.131],
+  [-85.562, 44.75], [-86.0, 44.1], [-86.237, 43.74], [-86.431, 43.47],
+  [-86.55, 43.113], [-86.625, 42.693], [-86.563, 42.243], [-86.823, 41.76],
+];
+
+const MICHIGAN_UPPER = [
+  [-84.7, 45.78], [-84.37, 45.78], [-84.119, 45.49], [-83.97, 45.083],
+  [-83.43, 45.32], [-82.95, 45.52], [-82.55, 45.65], [-82.06, 45.77],
+  [-81.85, 45.97], [-82.09, 46.19], [-83.27, 46.31], [-83.6, 46.42],
+  [-84.0, 46.42], [-84.37, 46.5], [-84.6, 46.46], [-84.78, 46.27],
+  [-84.78, 45.95], [-85.03, 46.05], [-85.42, 46.08], [-85.97, 46.07],
+  [-86.49, 46.04], [-86.98, 46.08], [-87.55, 46.21], [-87.9, 46.31],
+  [-88.26, 46.42], [-88.4, 46.54],
+  [-88.49, 47.468], [-88.218, 47.391], [-87.78, 47.023], [-87.43, 46.83],
+  [-88.6, 46.52], [-89.04, 46.62], [-89.72, 46.64], [-90.12, 46.69],
+  [-90.418, 46.57], [-90.36, 46.33], [-89.86, 46.17], [-89.14, 45.99],
+  [-88.71, 45.87], [-88.2, 45.79], [-87.76, 45.66], [-87.46, 45.4],
+  [-87.282, 45.183], [-87.09, 45.1], [-86.94, 45.2], [-86.71, 45.44],
+  [-86.37, 45.68], [-85.97, 45.76], [-85.55, 45.68], [-85.32, 45.77],
+  [-84.85, 45.79], [-84.7, 45.78],
+];
+
 function drawEarth(){
   if(!eCtx) return;
   eCtx.clearRect(0,0,eW,eH);
@@ -1568,6 +1600,10 @@ function drawEarth(){
       0.6
     );
   });
+
+  // ── Michigan — home ──
+  drawSmoothedPoly(MICHIGAN_LOWER, cx, cy, R, null, 'rgba(100,165,240,0.28)', 0.6);
+  drawSmoothedPoly(MICHIGAN_UPPER, cx, cy, R, null, 'rgba(100,165,240,0.28)', 0.6);
 
   // ── Limb brightening — atmosphere edge ──
   const limb=eCtx.createRadialGradient(cx,cy,R*0.65,cx,cy,R);
