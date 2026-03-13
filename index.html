@@ -964,6 +964,11 @@ function startMeditation(){
   userName='';
   userIntention=document.getElementById('intention-text').value.trim();
   soundOn=document.getElementById('sound-tog').checked;
+  // Unlock AudioContext immediately inside the user gesture (BEGIN tap)
+  // Mobile browsers (iOS/Android) require audio to be initiated within a direct tap event.
+  // We create and resume the context NOW while we're still inside the gesture,
+  // then schedule the actual sound to start after the fade-in delay.
+  if(soundOn){ initAudio(); if(audioCtx.state==='suspended') audioCtx.resume(); }
   inSession=true; elapsed=0; soulsCount=1;
   nationsSet=new Set(['You']); Object.keys(peers).forEach(k=>delete peers[k]);
   globeDots={}; show('meditation-screen');
@@ -1629,20 +1634,6 @@ function drawEarth(){
   oGrad.addColorStop(1,'#020709');
   eCtx.beginPath(); eCtx.arc(cx,cy,R,0,Math.PI*2);
   eCtx.fillStyle=oGrad; eCtx.fill();
-
-  // ── Grid — barely-there ──
-  eCtx.save(); eCtx.globalAlpha=0.04;
-  for(let lat=-60;lat<=60;lat+=30){
-    const pts=[];
-    for(let lng=-180;lng<=180;lng+=2){const p=project(lat,lng,cx,cy,R);if(p.z>0)pts.push(p);}
-    if(pts.length>1){eCtx.beginPath();pts.forEach((p,i)=>i===0?eCtx.moveTo(p.x,p.y):eCtx.lineTo(p.x,p.y));eCtx.strokeStyle='#5090d0';eCtx.lineWidth=0.5;eCtx.stroke();}
-  }
-  for(let lng=-180;lng<180;lng+=30){
-    const pts=[];
-    for(let lat=-88;lat<=88;lat+=2){const p=project(lat,lng,cx,cy,R);if(p.z>0)pts.push(p);}
-    if(pts.length>1){eCtx.beginPath();pts.forEach((p,i)=>i===0?eCtx.moveTo(p.x,p.y):eCtx.lineTo(p.x,p.y));eCtx.strokeStyle='#5090d0';eCtx.lineWidth=0.5;eCtx.stroke();}
-  }
-  eCtx.restore();
 
   // ── Continents — clean stroke-only coastlines ──
   landPolygons.forEach(poly => {
