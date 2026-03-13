@@ -945,6 +945,8 @@ function startMeditation(){
   inSession=true; elapsed=0; soulsCount=1;
   nationsSet=new Set(['You']); Object.keys(peers).forEach(k=>delete peers[k]);
   globeDots={}; show('meditation-screen');
+  document.getElementById('cursor').style.display='none';
+  document.getElementById('cursor-ring').style.display='none';
 
   getLoc((lat,lng)=>{
     myLat=lat; myLng=lng; announce(); listenPeers();
@@ -965,6 +967,7 @@ function startMeditation(){
   showIntention();
 
   if(soundOn) setTimeout(()=>startSound(),2000);
+  requestWakeLock();
 
   if(breathOn){
     document.getElementById('breath-overlay').classList.add('show');
@@ -976,11 +979,13 @@ function endMeditation(){
   inSession=false;
   clearInterval(sessTimer); clearInterval(heartTimer);
   if(breathRafId){ cancelAnimationFrame(breathRafId); breathRafId=null; }
-  withdraw(); stopSound();
+  withdraw(); stopSound(); releaseWakeLock();
   eCtx=null;
   document.getElementById('earth-canvas').classList.remove('visible');
   document.getElementById('breath-overlay').classList.remove('show');
   if(youTag) youTag.style.display='none';
+  document.getElementById('cursor').style.display='block';
+  document.getElementById('cursor-ring').style.display='block';
 
   document.getElementById('fin-souls').textContent=(soulsCount===1?'1 soul':soulsCount+' souls');
   document.getElementById('fin-mins').textContent=Math.floor(elapsed/60);
@@ -993,6 +998,26 @@ function updateTimer(){
   document.getElementById('timer-lbl').textContent=String(Math.floor(r/60)).padStart(2,'0')+':'+String(r%60).padStart(2,'0');
   document.getElementById('mins-n').textContent=Math.floor(elapsed/60);
 }
+
+// ── WAKE LOCK — keep screen alive during meditation ──
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } catch(e) {}
+  }
+}
+
+function releaseWakeLock() {
+  if (wakeLock) { wakeLock.release().catch(()=>{}); wakeLock = null; }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && inSession) requestWakeLock();
+});
 
 // ── AMBIENT SOUND — Warm Light & Love soundscape ───
 // Architecture:
@@ -1541,7 +1566,7 @@ function drawEarth(){
   if(!eCtx) return;
   eCtx.clearRect(0,0,eW,eH);
   const cx=eW/2, cy=eH/2;
-  globeRot=(globeRot+0.028)%360;
+  globeRot=(globeRot-0.028+360)%360;
 
   // ── Breath-driven globe scale ──
   // The Earth IS the breath guide — it grows on inhale, holds full,
