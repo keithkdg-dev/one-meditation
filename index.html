@@ -848,10 +848,32 @@ for (let i=0;i<25;i++) {
 
 // ── CURSOR ──────────────────────────────────────────
 const cur = document.getElementById('cursor'), curR = document.getElementById('cursor-ring');
+let cursorHideTimer = null;
+
+function showCursor() {
+  cur.style.opacity = '1';
+  curR.style.opacity = '1';
+}
+
+function scheduleCursorHide() {
+  clearTimeout(cursorHideTimer);
+  cursorHideTimer = setTimeout(() => {
+    if (inSession) {
+      cur.style.opacity = '0';
+      curR.style.opacity = '0';
+    }
+  }, 2500);
+}
+
 document.addEventListener('mousemove', e => {
   cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px';
   setTimeout(()=>{curR.style.left=e.clientX+'px';curR.style.top=e.clientY+'px';},55);
+  if (inSession) { showCursor(); scheduleCursorHide(); }
 });
+
+document.addEventListener('touchstart', () => {
+  if (inSession) { showCursor(); scheduleCursorHide(); }
+}, { passive: true });
 
 // ── NAV ─────────────────────────────────────────────
 function show(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
@@ -945,8 +967,10 @@ function startMeditation(){
   inSession=true; elapsed=0; soulsCount=1;
   nationsSet=new Set(['You']); Object.keys(peers).forEach(k=>delete peers[k]);
   globeDots={}; show('meditation-screen');
-  document.getElementById('cursor').style.display='none';
-  document.getElementById('cursor-ring').style.display='none';
+  cur.style.transition = 'opacity 1s';
+  curR.style.transition = 'opacity 1s';
+  cur.style.opacity = '0';
+  curR.style.opacity = '0';
 
   getLoc((lat,lng)=>{
     myLat=lat; myLng=lng; announce(); listenPeers();
@@ -986,6 +1010,9 @@ function endMeditation(){
   if(youTag) youTag.style.display='none';
   document.getElementById('cursor').style.display='block';
   document.getElementById('cursor-ring').style.display='block';
+  cur.style.opacity = '1';
+  curR.style.opacity = '1';
+  clearTimeout(cursorHideTimer);
 
   document.getElementById('fin-souls').textContent=(soulsCount===1?'1 soul':soulsCount+' souls');
   document.getElementById('fin-mins').textContent=Math.floor(elapsed/60);
